@@ -1,0 +1,189 @@
+% statistical test for single trial
+clear all
+% this load processed data for checking statistical tests
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\new_pupil_data.mat','new_pupil_data')
+
+%%
+
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+clear pval
+
+    data_nasal=sorted_trials(itrial,order_nasal);
+    data_temporal=sorted_trials(itrial,order_temporal);
+    
+    [h0(itrial), pval(itrial), ci{itrial}, stats{itrial}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+
+
+animal_id_list=unique(new_pupil_data.animal_id)
+for iAn=1:length(animal_id_list)
+    iAn=10
+    indecies=find(new_pupil_data.animal_id==animal_id_list(iAn))
+    appendedArray=[];
+    
+    for ii=1:length(indecies)
+        clear tmp
+        tmp=new_pupil_data.trials_median_diam_stims_reordered_offset{indecies(ii)}
+        appendedArray = vertcat(appendedArray, tmp);
+    end
+    
+    data_nasal=appendedArray(itrial,order_nasal);
+    data_temporal=appendedArray(itrial,order_temporal);
+    
+    [h0(itrial), pval(itrial), ci{itrial}, stats{itrial}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+
+
+end
+
+%% across 13 mice
+tt=cell2mat(new_pupil_data.av_median_diam_stims_reordered_offset');
+fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+% ax_heatmap_allmice_plot = axes('position',[.1,.07,.15,.15],'units','normalized');
+% 
+% Find the maximum value in each trial
+max_values = max(tt, [], 2);
+
+% Sort trials based on the maximum value
+[sorted_max_values, sorted_indices] = sort(max_values);
+
+% Sort the trials matrix based on the sorted indices
+sorted_trials = tt(sorted_indices, :);
+
+% axes(ax_heatmap_allmice_plot)
+imagesc(sorted_trials)
+axis tight
+axis square
+cmap=colormap(redblue)
+set(gca,'CLim',[-0.4 0.4])
+ylabel('# sessions')
+xlabel('directions')
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330])
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05] 
+caxis([-0.4 0.41]);
+
+set(cb,'tickdir','out','fontsize',8,'ticklength',get(cb,'ticklength')*4);
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'heatmap_median_pupil_sessions.pdf']);
+
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+clear pval
+
+for itrial=1:length(sorted_trials)
+    [h0(itrial), pval(itrial), ci{itrial}, stats{itrial}]=ttest2(sorted_trials(itrial,order_nasal), sorted_trials(itrial,order_temporal),'Tail','right');
+    %[pval(iAn),h0(iAn),stats{iAn}]=signrank(ttrials(itrial,order_nasal), ttrials(itrial,order_temporal), 'Tail','right');
+end
+
+number_increased_diam_sessions=length(find(pval<0.05));
+number_increased_diam_sessions
+
+
+%%
+
+%% averaged 40 sessions
+tt=cell2mat(new_pupil_data.av_median_diam_stims_reordered_offset');
+fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+% ax_heatmap_allmice_plot = axes('position',[.1,.07,.15,.15],'units','normalized');
+% 
+% Find the maximum value in each trial
+max_values = max(tt, [], 2);
+
+% Sort trials based on the maximum value
+[sorted_max_values, sorted_indices] = sort(max_values);
+
+% Sort the trials matrix based on the sorted indices
+sorted_trials = tt(sorted_indices, :);
+
+% axes(ax_heatmap_allmice_plot)
+imagesc(sorted_trials)
+axis tight
+axis square
+cmap=colormap(redblue)
+set(gca,'CLim',[-0.4 0.4])
+ylabel('# sessions')
+xlabel('directions')
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330])
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05] 
+caxis([-0.4 0.41]);
+
+set(cb,'tickdir','out','fontsize',8,'ticklength',get(cb,'ticklength')*4);
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'heatmap_median_pupil_sessions.pdf']);
+
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+clear pval
+
+for itrial=1:length(sorted_trials)
+    [h0(itrial), pval(itrial), ci{itrial}, stats{itrial}]=ttest2(sorted_trials(itrial,order_nasal), sorted_trials(itrial,order_temporal),'Tail','right');
+    %[pval(iAn),h0(iAn),stats{iAn}]=signrank(ttrials(itrial,order_nasal), ttrials(itrial,order_temporal), 'Tail','right');
+end
+
+number_increased_diam_sessions=length(find(pval<0.05));
+number_increased_diam_sessions
+%%
+kk=new_pupil_data.trials_median_diam_stims_reordered_offset
+clear pval
+for isession=1:length(kk)
+    clear data_inputs
+    clear data_temporal
+    clear data_nasal
+    data_inputs=kk{isession}
+    data_nasal=data_inputs(:,order_nasal)
+    data_temporal=data_inputs(:,order_temporal)
+    [h0(isession), pval(isession), ci{isession}, stats{isession}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+end
+number_increased_diam_sessions=length(find(pval<0.05));
+number_increased_diam_sessions
+
+%pval(sorted_indices)
+%% averaged 40 sessions
+ttrials=cell2mat(new_pupil_data.trials_median_diam_stims_reordered_middle');
+% Find the maximum value in each trial
+max_values = max(ttrials, [], 2);
+% Sort trials based on the maximum value
+[sorted_max_values, sorted_indices] = sort(max_values);
+% Sort the trials matrix based on the sorted indices
+sorted_trials = ttrials(sorted_indices, :);
+%
+fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+% ax_heatmap_allmice_plot = axes('position',[.1,.07,.15,.15],'units','normalized');
+% 
+% axes(ax_heatmap_allmice_plot)
+imagesc(sorted_trials)
+axis tight
+axis square
+cmap=colormap(redblue)
+set(gca,'CLim',[-0.4 0.4])
+ylabel('# trials')
+xlabel('directions')
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330])
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05] 
+caxis([-0.4 0.41]);
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'heatmap_median_pupil_trials.pdf']);
+
+
+%%
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+
+for itrial=1:length(ttrials)
+    [h0(itrial), pval(itrial), ci{itrial}, stats{itrial}]=ttest2(ttrials(itrial,order_nasal), ttrials(itrial,order_temporal),'Tail','right');
+    %[pval(iAn),h0(iAn),stats{iAn}]=signrank(ttrials(itrial,order_nasal), ttrials(itrial,order_temporal), 'Tail','right');
+
+end
+number_increased_diam_trials=length(find(pval<0.05));
+number_increased_diam_trials

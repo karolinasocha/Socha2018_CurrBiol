@@ -377,20 +377,8 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Fig
 print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_fixed.pdf']);
 
 %%
-ylimitation_areazscored=[-0.5 1.5];
-
-frameRate=315/10;
-
-pre_frames=round(2*frameRate)
-post_frames=round((2+5+3)*frameRate)
-stim_frames=pre_frames+round(5*frameRate)
-val=[-2.2,0,5,8];
-
-
-
 fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
     'centimeters','papersize',[20,20],'paperposition',[0,0,20,20]);
-clf
 ax_pupildynamics_allsessions_plot(1) = axes('position',[.1,.07,.15,.27],'units','normalized');
 ax_pupildynamics_allsessions_plot(2) = axes('position',[.30,.07,.15,.27],'units','normalized');
 
@@ -403,7 +391,7 @@ ax_pupildynamics_allsessions_plot(6) = axes('position',[.30,.67,.15,.27],'units'
 % AREA DIFFERENCE ZSCORED 
 for iStim=1:6
     
-axes(ax_pupildynamics_allsessions_plot(iStim))
+axes(ax_pupildynamics_allsessions_plot_awake_zscorearea(iStim))
 a_ax=area(substraction_values(iStim,:));
 a_ax.FaceColor=[0.5 0.5 0.5];
 axis tight
@@ -411,16 +399,12 @@ hold on
 plot([pre_frames pre_frames],ylimitation_areazscored,'--k');
 hold on
 plot([stim_frames stim_frames],ylimitation_areazscored,'--k');
-set(ax_pupildynamics_allsessions_plot(iStim),'ytick',[min(ylimitation_areazscored):0.5:max(ylimitation_areazscored)],'xtick',[0,pre_frames,stim_frames,pre_frames+post_frames],'xticklabel',val,...
+set(ax_pupildynamics_allsessions_plot_awake_zscorearea(iStim),'ytick',[min(ylimitation_areazscored):0.5:max(ylimitation_areazscored)],'xtick',[0,pre_frames,stim_frames,pre_frames+post_frames],'xticklabel',val,...
     'tickdir','out','box','off','layer','top','color','none',...
-    'fontsize',14,'ticklength',get(ax_pupildynamics_allsessions_plot(iStim),'ticklength')*4);
+    'fontsize',14,'ticklength',get(ax_pupildynamics_allsessions_plot_awake_zscorearea(iStim),'ticklength')*4);
 
-%title 'Awake'
-%ylabel('Diff zscored')
-%xlabel('Time')
+title 'Awake'
+ylabel('Diff zscored')
+xlabel('Time')
 %
 end
-
-set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\Figure1C\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_areaDifference.pdf']);

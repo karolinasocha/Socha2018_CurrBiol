@@ -1,8 +1,12 @@
 %% test between animals
+%% add directory to functions
+addpath(genpath('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\functions'))
+
 %% Main figure 1
 clear all
-
-load('G:\mousebox\code\mouselab\users\karolina\figure_paper_data_reanalyzed_behaviour\data_behav_40expt.mat')
+data_behav_40expt_directory='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\data_behav_40expt.mat'
+load(data_behav_40expt_directory)
+%load('G:\mousebox\code\mouselab\users\karolina\figure_paper_data_reanalyzed_behaviour\data_behav_40expt.mat')
 
 newdir=data_behav_40expt.newdir;
 stimulus=data_behav_40expt.stimulus;
@@ -11,13 +15,18 @@ expt=data_behav_40expt.expt;
 expt2=data_behav_40expt.expt2;
 diameter=data_behav_40expt.diameter;
 diam=diameter;
+session_id= data_behav_40expt.session_id;
+animal_id= data_behav_40expt.animal_id;
 %%
 clear av_eye_epochs
 clear trials_eye_epochs
 clear trials_eye_stims
 clear av_eye_stims
 
-%%
+%% creates epochs for evry stimulus condition and trial; 
+% the length depends on the framerate of acquisition so it matches imaging
+% data
+
 for iAn=1:size(diameter,2)
     clear eye_tmp
     clear stims_temp
@@ -47,10 +56,14 @@ clear eye_tmp
 clear epochs_temp
 clear stims_temp
 end
+
 %%
-%%
+%% creates eye_trace_alltrials
+% average zscored pupil during visual stimulation for individual trials
+
 j=0;
 eye_trace_alltrials=nan([size(newdir,1) 12]);
+
 for iAn=1:size(newdir,1)
         j=j+1
         clear correct_value
@@ -73,13 +86,14 @@ for itrial=1:size(trials_eye_stims{iAn},3);
 eye_trace_individualtrials{iAn}(itrial,:)=squeeze(nanmean(tmp_data(:,order)));     
 
 end
-
 end
-%%
+
+%% averages zscored pupil size across trials
 for iAn=1:40
 eye_trace_individualtrials_av{iAn}=nanmean(eye_trace_individualtrials{iAn},1)
 end
-%%
+%% creates matrix all sessions and mice
+
 nSess=size(newdir,1)
 [nT nS]=size(eye_trace_individualtrials{1})
 session_array=nan(nSess,nT,nS)
@@ -106,7 +120,7 @@ for iAn=1:40
     y_session(iAn)=y
 end
 
-%%
+%% arbitrary distinguish which directions is nasal vs temporal
 order_nasal=[11,12,1,2,3,4];
 order_temporal=[5,6,7,8,9,10];
 clear eye_trace_nasal_sameanimal
@@ -154,6 +168,7 @@ end
 %% kstest for all individual trials
 for iAn=1:13
 [h0_kstest_trials(iAn), pval_kstest_trials(iAn)]=kstest2(array_animals_temporal_trials{iAn}(:), array_animals_nasal_trials{iAn}(:));
+
 end
 
 %%
@@ -168,12 +183,14 @@ for iAn=1:13
 tmp_temporal=trace_animals_temporal(iAn,:);
 tmp_nasal=trace_animals_nasal(iAn,:);
 
-%[h(iAn), p(iAn)]=ttest2(tmp_nasal, tmp_temporal);
+[h(iAn), p(iAn)]=ttest2(tmp_nasal, tmp_temporal);
 
-[h(iAn), p(iAn)]=kstest2(tmp_nasal, tmp_temporal);
+%[h(iAn), p(iAn)]=kstest2(tmp_nasal, tmp_temporal);
 
 end
-
+colormap(bluered)
+pval_kstest=p
+h0_kstest=h
 %% average mouse heat map
 fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
     'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
@@ -183,7 +200,8 @@ axes(ax_heatmap_allmice_plot)
 imagesc(trace_animals)
 axis tight
 axis square
-cmap=colormap('bluered')
+
+cmap=colormap(redblue)
 set(gca,'CLim',[-0.4 0.4])
 
 cb=colorbar;
@@ -210,7 +228,10 @@ for iAn=1:13;
     
 tmp_temporal=av_temporal_trials(iAn,:);
 tmp_nasal=av_nasal_trials(iAn,:);
-[h0(iAn), pval(iAn)]=ttest2(tmp_nasal, tmp_temporal);
+%[h0(iAn), pval(iAn)]=ttest2(tmp_nasal, tmp_temporal);
+[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(tmp_nasal(~isnan(tmp_nasal)), tmp_temporal(~isnan(tmp_temporal)), 'Tail','right');
+%[pval(iAn),h0(iAn),stats{iAn}]=signrank(tmp_nasal(~isnan(tmp_nasal)), tmp_temporal(~isnan(tmp_temporal)), 'Tail','right');
+
 %[h0(iAn), pval(iAn)]=kstest2(tmp_nasal, tmp_temporal);
 
 end
@@ -243,7 +264,7 @@ axes(ax_heatmap_allmice_plot)
 imagesc(trace_animals)
 axis tight
 axis square
-cmap=colormap(bluered)
+cmap=colormap(redblue)
 set(gca,'CLim',[-0.4 0.4])
 
 cb=colorbar;
@@ -290,7 +311,7 @@ for iAn=1:13;
 tmp_temporal=trace_animals_temporal(iAn,:);
 tmp_nasal=trace_animals_nasal(iAn,:);
 [h0(iAn), pval(iAn)]=ttest2(tmp_nasal, tmp_temporal);
-[h0(iAn), pval(iAn)]=kstest2(tmp_nasal, tmp_temporal);
+%[h0(iAn), pval(iAn)]=kstest2(tmp_nasal, tmp_temporal);
 
 end
 
