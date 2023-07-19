@@ -20,3 +20,14 @@ diameter=data_behav_40expt.diameter;
 diam=diameter;
 session_id= data_behav_40expt.session_id;
 animal_id= data_behav_40expt.animal_id;
+
+%% pupil_data 
+% pupil_data=[animal_id, sessions_id, trial_id, dir1,...,dir12, control_blank]
+
+% create array : pupil_data
+
+
+
+
+
+

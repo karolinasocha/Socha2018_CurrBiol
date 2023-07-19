@@ -1,0 +1,225 @@
+
+%% Figure SM3 
+% anesthesia recordings and post recordings
+
+clear all
+newdir_diameter_anesthesia={'181108_KS600_ephys_behav_JC\run01_direction_12dir_4Hz_ansth',...
+    '181108_KS602_ephys_behav_JC\run01_direction_12dir_4Hz_anesth'};
+
+newdir_diameter_postawake={'181108_KS600_ephys_behav_JC\run02_direction_12dir_4Hz',...
+    '181108_KS602_ephys_behav_JC\run02_direction_12dir_4Hz'};
+
+analysis_path='J:\data\analysis\';
+%% save pupil awake - anesthesia data
+
+
+%%
+for iAn=1:size(newdir_diameter_anesthesia,2)
+clear tmp_behav
+   
+tmp_behav=load([analysis_path newdir_diameter_anesthesia{iAn} '\behav_data.mat']);
+behav{iAn}=tmp_behav.behav_data;
+diameter_anesthesia_stim{iAn}=pi*(behav{iAn}.diameter.diam_stim./2).^2;
+diameter_anesthesia_epochs{iAn}=pi*(behav{iAn}.diameter.diam_epochs./2).^2;
+diameter_anesthesia{iAn}=behav{iAn}.diameter; % this is previous calculation in mm
+
+end
+
+for iAn=1:size(newdir_diameter_postawake,2)
+   clear tmp_behav 
+   
+tmp_behav=load([analysis_path newdir_diameter_postawake{iAn} '\behav_data.mat']);
+behav_awake{iAn}=tmp_behav.behav_data;
+diameter_awake_stim{iAn}=pi*(behav_awake{iAn}.diameter.diam_stim./2).^2;
+diameter_awake_epochs{iAn}=pi*(behav_awake{iAn}.diameter.diam_epochs./2).^2;
+diameter_awake{iAn}=behav_awake{iAn}.diameter; % this is in mm
+
+end
+
+%% calculate delta
+%% PLO DELTA PUPIL FOR ANESTHESIA
+
+eye_trace_awake_stims=nan([size(newdir_diameter_anesthesia,2)+1 12]);
+eye_trace_anesthesia_stims=nan([size(newdir_diameter_anesthesia,2)+1 12]);
+
+for iAn=1:size(newdir_diameter_anesthesia,2);
+        
+    % ANASTHESIA
+        clear temp
+        frameRate=diameter_anesthesia{iAn}.cframespre/2;
+        frame_starts=round(0.5*frameRate);
+        frame_ends=round(1*frameRate);
+
+
+        epochs_length=length(diameter_anesthesia_stim{iAn});
+
+        temp=diameter_anesthesia_stim{iAn}(:,:,1:end-1);
+        clear data_trials_offset
+        clear data_trials_onset
+        
+        data_trials_offset=squeeze(nanmean(temp(end-frame_starts:end,:,:),1));
+        data_trials_onset=squeeze(nanmean(temp(frame_starts:frame_ends,:,:),1));
+        %trials_raw_diam_difference_stimulation{iAn}=data_trials_offset - data_trials_onset ;
+        trials_anasthesia_raw_diam_diff_relative_stimulation{iAn}=(data_trials_offset - data_trials_onset)./(data_trials_onset) ;
+        av_anasthesia_raw_diam_diff_relative_stimulation{iAn}=nanmean(trials_anasthesia_raw_diam_diff_relative_stimulation{iAn},1) ;
+    
+
+        % AWAKE
+        
+        clear temp
+        frameRate=diameter_awake{iAn}.cframespre/2;
+        frame_starts=round(0.5*frameRate);
+        frame_ends=round(1*frameRate);
+        
+        temp=diameter_awake_stim{iAn}(:,:,1:end-1);
+        
+        data_trials_offset=squeeze(nanmean(temp(end-frame_starts:end,:,:),1));
+        data_trials_onset=squeeze(nanmean(temp(frame_starts:frame_ends,:,:),1));
+        %trials_raw_diam_difference_stimulation{iAn}=data_trials_offset - data_trials_onset ;
+        trials_awake_raw_diam_diff_relative_stimulation{iAn}=(data_trials_offset - data_trials_onset)./(data_trials_onset) ;
+        av_awake_raw_diam_diff_relative_stimulation{iAn}=nanmean(trials_awake_raw_diam_diff_relative_stimulation{iAn},1) ;
+    
+end
+%% ANESTHESIA
+clear mean_pupil_delta
+mean_pupil_delta=100*cell2mat(av_awake_raw_diam_diff_relative_stimulation');
+
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+
+data_nasal=mean_pupil_delta(:,order_nasal);
+data_temporal=mean_pupil_delta(:,order_temporal);
+
+%[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+[pval_awake, h0_awake]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+
+% Calculate the mean and standard deviation across columns
+meanData = nanmean(mean_pupil_delta);
+stdData = nanstd(mean_pupil_delta);
+
+% Calculate the Standard Error of the Mean (SEM)
+semData = stdData ./ sqrt(size(mean_pupil_delta, 1));
+
+% Define x-axis values (e.g., assuming 5 data points)
+x = 1:numel(meanData);
+figure(1)
+% Plot the mean data
+plot(x, meanData, 'k', 'LineWidth', 2);
+hold on;
+
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [meanData - semData, fliplr(meanData + semData)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-5, 100]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_awake_relative_delta_pupil_SEM_animals.pdf']);
+%
+%%
+
+%% AWAKE
+clear mean_pupil_delta
+mean_pupil_delta=100*cell2mat(av_anasthesia_raw_diam_diff_relative_stimulation');
+
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+
+data_nasal=mean_pupil_delta(:,order_nasal);
+data_temporal=mean_pupil_delta(:,order_temporal);
+
+%[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+[pval_ansth, h0_ansth]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+
+% Calculate the mean and standard deviation across columns
+meanData = nanmean(mean_pupil_delta);
+stdData = nanstd(mean_pupil_delta);
+
+% Calculate the Standard Error of the Mean (SEM)
+semData = stdData ./ sqrt(size(mean_pupil_delta, 1));
+
+% Define x-axis values (e.g., assuming 5 data points)
+x = 1:numel(meanData);
+figure(1)
+% Plot the mean data
+plot(x, meanData, 'k', 'LineWidth', 2);
+hold on;
+
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [meanData - semData, fliplr(meanData + semData)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-5, 100]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_anesthesia_relative_delta_pupil_SEM_animals.pdf']);
+%
+%%
+%%
+mean_pupil_delta_anesthesia=100*cell2mat(av_anasthesia_raw_diam_diff_relative_stimulation');
+
+% Calculate the mean and standard deviation across columns
+meanData_ansth = nanmean(mean_pupil_delta_anesthesia);
+stdData_ansth = nanstd(mean_pupil_delta_anesthesia);
+
+% Calculate the Standard Error of the Mean (SEM)
+semData_ansth = stdData_ansth ./ sqrt(size(mean_pupil_delta_anesthesia, 1));
+
+% Define x-axis values (e.g., assuming 5 data points)
+x = 1:numel(meanData_ansth);
+figure(1)
+% Plot the mean data
+plot(x, meanData_ansth, 'k', 'LineWidth', 2);
+hold on;
+
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [meanData_ansth - semData_ansth, fliplr(meanData_ansth + semData_ansth)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+
+% AWAKE
+
+mean_pupil_delta_awake=100*cell2mat(av_awake_raw_diam_diff_relative_stimulation');
+
+% Calculate the mean and standard deviation across columns
+meanData_awake = nanmean(mean_pupil_delta_awake);
+stdData_awake = nanstd(mean_pupil_delta_awake);
+
+% Calculate the Standard Error of the Mean (SEM)
+semData_awake = stdData_awake ./ sqrt(size(mean_pupil_delta_awake, 1));
+
+plot(x, meanData_awake, 'b', 'LineWidth', 2);
+hold on;
+
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [meanData_awake - semData_awake, fliplr(meanData_awake + semData_awake)], 'b', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-5, 100]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_anesthesia_awake_relative_delta_pupil_SEM_animals.pdf']);
+%
+
+
+
+
+
+
+
