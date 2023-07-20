@@ -108,7 +108,9 @@ for iAn=1:length(pupil_animals_cell)
     data_nasal=pupil_animals_cell{iAn}(order_nasal)
     data_temporal=pupil_animals_cell{iAn}(order_temporal)
     hold on
-    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+%    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors(iAn,:),'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+
     data_nasal_all{iAn}=nanmean(data_nasal);
     data_temporal_all{iAn}=nanmean(data_temporal);
 end
@@ -144,10 +146,62 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 %print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_sessions.pdf']);
+%%
+order_nasal
+order_temporal
+
+colors_scatter=[0.8941    0.1010    0.1098
+    0.2157    0.4941    0.7216
+    0.3010    0.6863    0.2902
+    0.5961    0.3059    0.6392
+    1.0000    0.4980    0.0000
+    1.0000    1.0000    0.2000];
+
+figure
+
+for iCond=1:12
+    pupil_stim{iCond}=av_delta_animals(:,iCond)
+end
+
+figure
+clf
+markerSymbols = {'o', '^', 's', 'd', '*', 'x'};
 
 
+for iStim=1:6
+    clear data_temporal
+    clear data_nasal
+    
+    data_nasal=pupil_stim{order_nasal(iStim)};
+    data_temporal=pupil_stim{order_temporal(iStim)};
+    hold on
+%   plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors_scatter(iStim,:),'MarkerEdgeColor', [0.5, 0.5, 0.5],'Marker', markerSymbols); %colors_scatter(iSess,:)
 
+    data_nasal_all{iAn}=nanmean(data_nasal);
+    data_temporal_all{iAn}=nanmean(data_temporal);
+end
 
+ylim([-10, 70])
+xlim([-10, 40])
+
+hold on;
+plot(mean_all_temporal, mean_all_nasal, 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
+hLegend=legend
+legendLabels = {'300-120', '330-150','0-180','30-210', '60-240','90-270','mean'};
+set(hLegend, 'String', legendLabels);
+
+hold on
+plot([-100 100], [-100 100],'--k');
+
+ylabel('Pupil size change (%) NASAL', 'FontSize',18,'Color','k');
+xlabel('Pupil size change (%) TEMPORAL','FontSize',18,'Color','k');
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_scatter_13mice.pdf']);
 %% PLOT MEAN PUPIL CHANGE ACROSS ANIMALS
 
 mean_pupil_delta=100*cell2mat(pupil_animals_cell');
@@ -162,6 +216,7 @@ semData = stdData ./ sqrt(size(mean_pupil_delta, 1));
 % Define x-axis values (e.g., assuming 5 data points)
 x = 1:numel(meanData);
 figure(1)
+clf
 % Plot the mean data
 plot(x, meanData, 'k', 'LineWidth', 2);
 hold on;
@@ -249,7 +304,7 @@ end
 %%
 y=animal_id_list
 significant_session_index=find(pval_sess<0.05);
-significant_session_index=new_pupil_data.animal_id(significant_session_index);
+
 
 [x1, y1] =histc(new_pupil_data.animal_id,animal_id_list);
 [x2, y2] =histc(new_pupil_data.animal_id(significant_session_index),animal_id_list);
