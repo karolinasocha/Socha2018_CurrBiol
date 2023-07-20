@@ -120,14 +120,14 @@ for ipair=1:size(pairs,1)
     %[P(ipair),H(ipair),STATS(ipair)] = ranksum(data1(:),data2(:));
 
     %[H(ipair),P(ipair),KSSTAT{ipair}]=kstest2(data1(:),data2(:));
-   
-    if P(ipair)>0.05
+
+    if P(ipair)>0.01
         sig_level=1
-    elseif P(ipair)<=0.05 & P(ipair)>0.01
-        sig_level=2
     elseif P(ipair)<=0.01 & P(ipair)>0.001
-        sig_level=3
+        sig_level=2
     elseif P(ipair)<=0.001 & P(ipair)>0.0001
+        sig_level=3
+    elseif P(ipair)<=0.0001 & P(ipair)>0.00001
         sig_level=4
     else sig_level=5;
         
@@ -135,6 +135,13 @@ for ipair=1:size(pairs,1)
         pval_sig_now(pair_now(1),pair_now(2))=P(ipair);
         mat_sig_now(pair_now(1),pair_now(2))=sig_level*2;
     
+    if P(ipair) <= alpha_Bonferroni
+        Bonferroni_correction(ipair)=1;
+        disp(['Iteration ', num2str(i), ': Reject null hypothesis']);
+    else
+        disp(['Iteration ', num2str(i), ': Fail to reject null hypothesis']);
+        Bonferroni_correction(ipair)=0;
+    end
 end
 
 %
@@ -177,6 +184,29 @@ set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
 xtickangle(90);
 
 
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp.pdf']);
+
+
+%% Bonferroni correction
+
+    alpha = 0.05;
+    alpha_Bonferroni = alpha / nruns;
+
+    % Compare each p-value to the Bonferroni-corrected significance level
+    for i = 1:nruns
+        if P(ipair) <= alpha_Bonferroni
+            Bonferroni_correction(i)=1;
+            disp(['Iteration ', num2str(i), ': Reject null hypothesis']);
+        else
+            disp(['Iteration ', num2str(i), ': Fail to reject null hypothesis']);
+            Bonferroni_correction(i)=0;
+        end
+    end
 
 
 

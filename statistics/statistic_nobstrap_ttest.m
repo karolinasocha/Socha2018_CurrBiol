@@ -69,10 +69,10 @@ for ipair=1:size(pairs,1)
     data2=data_all{pair_now(2)};
     % run KS2 test
     %[~,~,ks2stat(ipair)]=kstest2(data1(:),data2(:)); 
-    %[H(ipair),P(ipair),CI{ipair}]=ttest2(data1(:),data2(:)); 
+    [H(ipair),P(ipair),CI{ipair}]=ttest2(data1(:),data2(:),'Tail','right'); 
     %[P(ipair),H(ipair),STATS(ipair)] = ranksum(data1(:),data2(:));
     
-    [H(ipair),P(ipair),KSSTAT{ipair}]=kstest2(data1(:),data2(:));
+    %[H(ipair),P(ipair),KSSTAT{ipair}]=kstest2(data1(:),data2(:));
    
     
     if P(ipair)>0.05
