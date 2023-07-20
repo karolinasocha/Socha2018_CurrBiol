@@ -189,9 +189,9 @@ box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp.pdf']);
 
-
+legend
 %% Bonferroni correction
 
     alpha = 0.05;
@@ -208,6 +208,92 @@ print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_bts
         end
     end
 
+
+%%
+alpha = 0.05;
+alpha_Bonferroni = alpha / nruns;
+
+pairs=nchoosek(1:ngroup,2);
+ks2stat=nan(length(pairs),1);
+    
+for ipair=1:size(pairs,1)
+    clear data1
+    clear data2
+    pair_now=pairs(ipair,:);    
+    data1=data_all{pair_now(1)};
+    data2=data_all{pair_now(2)};
+    % run KS2 test
+    %[~,~,ks2stat(ipair)]=kstest2(data1(:),data2(:)); 
+    %[H(ipair),P(ipair),CI{ipair}]=ttest2(data1(:),data2(:)); 
+    %[H(ipair),P(ipair),CI{ipair}]=ttest2(data1(:),data2(:), 'Tail','right'); 
+    [P(ipair), H(ipair), stat{ipair}]=signrank(data1(:),data2(:), 'Tail','right'); 
+    %[P(ipair),H(ipair),STATS(ipair)] = ranksum(data1(:),data2(:));
+
+    %[H(ipair),P(ipair),KSSTAT{ipair}]=kstest2(data1(:),data2(:));
+
+    if P(ipair)>alpha_Bonferroni
+        sig_level=1
+    elseif P(ipair)<=alpha_Bonferroni
+        sig_level=4
+    end
+        pval_sig_now(pair_now(1),pair_now(2))=P(ipair);
+        mat_sig_now(pair_now(1),pair_now(2))=sig_level*2;
+    
+    if P(ipair) <= alpha_Bonferroni
+        Bonferroni_correction(ipair)=1;
+        disp(['Iteration ', num2str(i), ': Reject null hypothesis']);
+    else
+        disp(['Iteration ', num2str(i), ': Fail to reject null hypothesis']);
+        Bonferroni_correction(ipair)=0;
+    end
+end
+
+%
+%mat_sig_now(mat_sig_now==2)=1;
+pval_sig_now2=squareform(squareform(pval_sig_now'));
+ 
+pval_sig_now2(find(eye(ngroup)==1))=1;
+pval_sig=pval_sig_now2;
+
+%mat_sig_now(mat_sig_now==2)=1;
+mat_sig_now2=squareform(squareform(mat_sig_now'));
+ 
+mat_sig_now2(find(eye(ngroup)==1))=1;
+mat_sig=mat_sig_now2;
+
+%
+figure
+[XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+set(hp,'edgecolor','w');
+colorspace=brewermap(8,'Blues');
+colormap(colorspace)
+set(gca,'clim',[0 8]);
+axis square ij
+box on
+set(gca,'xtick',[],'ytick',[])
+%
+diams = 5; % coefficient of marker size
+%Obtain the axes size (in axpos) in Points
+currentunits = get(gca,'Units');
+set(gca, 'Units', 'Points');
+axpos = get(gca,'Position');
+set(gca, 'Units', currentunits);
+
+markersize = diams/diff(xlim)*min(axpos(3),axpos(4))*1.5; % Calculate Marker width in points
+list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+
+set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+xtickangle(90);
+
+
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp.pdf']);
 
 
 

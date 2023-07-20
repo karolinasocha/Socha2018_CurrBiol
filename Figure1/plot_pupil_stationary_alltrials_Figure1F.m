@@ -106,20 +106,121 @@ for iSess=1:length(pupil_data_in)
     appendedArray_still{iSess}=appendedArray_still_tmp;
     appendedArray_loc{iSess}=appendedArray_loc_tmp;
     
+    clear validIndex
     data_nasal=appendedArray_still{iSess}(:,order_nasal);
     validIndex = ~isnan(data_nasal);
     data_nasal_test=data_nasal(validIndex);
-    
+    clear validIndex
     data_temporal=appendedArray_still{iSess}(:,order_temporal);
     validIndex = ~isnan(data_temporal);
     data_temporal_test=data_temporal(validIndex);
     
-   % [pval_session(iSess), h0_session(iSess), stats_session{iSess}]=signrank(data_nasal_test(:), data_temporal_test(:),'Tail','right');
+    %[pval_session(iSess), h0_session(iSess), stats_session{iSess}]=signrank(data_nasal_test(:), data_temporal_test(:),'Tail','right');
+    [h0_session_still(iSess),pval_session_still(iSess),]=ttest2(data_nasal_test(:), data_temporal_test(:),'Tail','right');
     
-    [h0_session(iSess),pval_session(iSess),]=ttest2(data_nasal_test(:), data_temporal_test(:),'Tail','right');
+    clear validIndex
+    data_nasal_loc=appendedArray_loc{iSess}(:,order_nasal);
+    validIndex = ~isnan(data_nasal_loc);
+    data_nasal_test_loc=data_nasal_loc(validIndex);
+    clear validIndex
+    data_temporal_loc=appendedArray_loc{iSess}(:,order_temporal);
+    validIndex = ~isnan(data_temporal_loc);
+    data_temporal_test_loc=data_temporal_loc(validIndex);
+    
+    [h0_session_loc(iSess),pval_session_loc(iSess),]=ttest2(data_nasal_test_loc(:), data_temporal_test_loc(:),'Tail','right');
+    %[pval_session_loc(iSess), h0_session_loc(iSess), stats_session_loc{iSess}]=signrank(data_nasal_test_loc(:), data_temporal_test_loc(:),'Tail','right');
     
 end
+
 %%
+for iSess=1:length(appendedArray_loc)
+mean_sess_appendedArray_loc(iSess,:)=nanmean(appendedArray_loc{iSess});
+mean_sess_appendedArray_still(iSess,:)=nanmean(appendedArray_still{iSess})
+end
+
+animal_id_list=unique(new_pupil_data.animal_id);
+session_id=new_pupil_data.sessions_id;
+animal_id=new_pupil_data.animal_id;
+
+for iAn=1:length(animal_id_list)
+
+    indecies=find(new_pupil_data.animal_id==animal_id_list(iAn));
+    
+    average_locomotion(iAn,:)=nanmean(mean_sess_appendedArray_loc(indecies,:),1);
+    average_stiationary(iAn,:)=nanmean(mean_sess_appendedArray_still(indecies,:),1);
+end
+%%
+
+mean_all_locomotion=100*nanmean(average_locomotion,1);
+sem_all_locomotion=100*nanstd(average_locomotion,1)./sqrt(size(average_locomotion, 1));
+
+mean_all_still=100*nanmean(average_stiationary,1);
+sem_all_still=100*nanstd(average_stiationary,1)./sqrt(size(average_stiationary, 1));
+
+x = 1:numel(mean_all_locomotion);
+
+figure(1)
+% Plot the mean data
+plot(x, mean_all_locomotion, 'r', 'LineWidth', 2);
+hold on;
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [mean_all_locomotion - sem_all_locomotion, fliplr(mean_all_locomotion + sem_all_locomotion)], 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+hold on
+plot(x, mean_all_still, 'k', 'LineWidth', 2);
+hold on;
+fill([x, fliplr(x)], [mean_all_still - sem_all_still, fliplr(mean_all_still + sem_all_still)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-10, 30.1]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
+
+%%
+selected_loc_animals=[2,4,11,10]; 
+selected_stationary_animals=[2,4,11,10]; 
+
+mean_all_locomotion=100*nanmean(average_locomotion(selected_loc_animals,:),1);
+sem_all_locomotion=100*nanstd(average_locomotion(selected_loc_animals,:),1)./sqrt(size(average_locomotion(selected_loc_animals,:), 1));
+
+mean_all_still=100*nanmean(average_stiationary,1);
+sem_all_still=100*nanstd(average_stiationary,1)./sqrt(size(average_stiationary, 1));
+
+x = 1:numel(mean_all_locomotion);
+
+figure(1)
+% Plot the mean data
+plot(x, mean_all_locomotion, 'r', 'LineWidth', 2);
+hold on;
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [mean_all_locomotion - sem_all_locomotion, fliplr(mean_all_locomotion + sem_all_locomotion)], 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+hold on
+plot(x, mean_all_still, 'k', 'LineWidth', 2);
+hold on;
+fill([x, fliplr(x)], [mean_all_still - sem_all_still, fliplr(mean_all_still + sem_all_still)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-10, 30.1]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
+
+%%
+animal_id_list=unique(new_pupil_data.animal_id);
 y=animal_id_list
 significant_session_index=find(pval_session<0.05);
 
