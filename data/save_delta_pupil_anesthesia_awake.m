@@ -120,7 +120,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_awake_relative_delta_pupil_SEM_animals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'average_awake_relative_delta_pupil_SEM_animals.pdf']);
 %
 %%
 
@@ -164,7 +164,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_anesthesia_relative_delta_pupil_SEM_animals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'average_anesthesia_relative_delta_pupil_SEM_animals.pdf']);
 %
 %%
 %%
@@ -181,11 +181,11 @@ semData_ansth = stdData_ansth ./ sqrt(size(mean_pupil_delta_anesthesia, 1));
 x = 1:numel(meanData_ansth);
 figure(1)
 % Plot the mean data
-plot(x, meanData_ansth, 'k', 'LineWidth', 2);
+plot(x, meanData_ansth, 'b', 'LineWidth', 2);
 hold on;
 
 % Create a shaded region for the SEM
-fill([x, fliplr(x)], [meanData_ansth - semData_ansth, fliplr(meanData_ansth + semData_ansth)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+fill([x, fliplr(x)], [meanData_ansth - semData_ansth, fliplr(meanData_ansth + semData_ansth)], 'b', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 
 % AWAKE
 
@@ -198,11 +198,11 @@ stdData_awake = nanstd(mean_pupil_delta_awake);
 % Calculate the Standard Error of the Mean (SEM)
 semData_awake = stdData_awake ./ sqrt(size(mean_pupil_delta_awake, 1));
 
-plot(x, meanData_awake, 'b', 'LineWidth', 2);
+plot(x, meanData_awake, 'k', 'LineWidth', 2);
 hold on;
 
 % Create a shaded region for the SEM
-fill([x, fliplr(x)], [meanData_awake - semData_awake, fliplr(meanData_awake + semData_awake)], 'b', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+fill([x, fliplr(x)], [meanData_awake - semData_awake, fliplr(meanData_awake + semData_awake)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 axis tight
 
 ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
