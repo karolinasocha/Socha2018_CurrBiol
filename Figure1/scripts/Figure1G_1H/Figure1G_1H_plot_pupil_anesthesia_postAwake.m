@@ -1,13 +1,25 @@
 %% Figure SM3 
 % anesthesia recordings and post recordings
 
+% clear all
+% newdir_diameter_anesthesia={'181108_KS600_ephys_behav_JC\run01_direction_12dir_4Hz_ansth',...
+%     '181108_KS602_ephys_behav_JC\run01_direction_12dir_4Hz_anesth'};
+% 
+% newdir_diameter_postawake={'181108_KS600_ephys_behav_JC\run02_direction_12dir_4Hz',...
+%     '181108_KS602_ephys_behav_JC\run02_direction_12dir_4Hz'};
+
+%%
+
 clear all
+
 newdir_diameter_anesthesia={'181108_KS600_ephys_behav_JC\run01_direction_12dir_4Hz_ansth',...
-    '181108_KS602_ephys_behav_JC\run01_direction_12dir_4Hz_anesth'};
+    '181108_KS602_ephys_behav_JC\run01_direction_12dir_4Hz_anesth',...
+    '170110_KS173_2P_KS\run03_ori12_V1_anesthesia'};
 
 newdir_diameter_postawake={'181108_KS600_ephys_behav_JC\run02_direction_12dir_4Hz',...
-    '181108_KS602_ephys_behav_JC\run02_direction_12dir_4Hz'};
-
+     '181108_KS602_ephys_behav_JC\run02_direction_12dir_4Hz',...
+     '170110_KS173_2P_KS\run03_ori12_V1_awake_after'};
+ 
 analysis_path='J:\data\analysis\';
 
 for iAn=1:size(newdir_diameter_anesthesia,2)

@@ -151,11 +151,11 @@ for iAn=1:length(animal_id_list)
 end
 %%
 
-mean_all_locomotion=100*nanmean(average_locomotion(:),1);
-sem_all_locomotion=100*nanstd(average_locomotion(:),1)./sqrt(size(average_locomotion, 1));
+mean_all_locomotion=100*nanmean(average_locomotion,1);
+sem_all_locomotion=100*nanstd(average_locomotion,1)./sqrt(size(average_locomotion, 1));
 
-mean_all_still=100*nanmean(average_stiationary(:),1);
-sem_all_still=100*nanstd(average_stiationary(:),1)./sqrt(size(average_stiationary, 1));
+mean_all_still=100*nanmean(average_stiationary,1);
+sem_all_still=100*nanstd(average_stiationary,1)./sqrt(size(average_stiationary, 1));
 
 x = 1:numel(mean_all_locomotion);
 
@@ -165,10 +165,10 @@ plot(x, mean_all_locomotion, 'r', 'LineWidth', 2);
 hold on;
 % Create a shaded region for the SEM
 fill([x, fliplr(x)], [mean_all_locomotion - sem_all_locomotion, fliplr(mean_all_locomotion + sem_all_locomotion)], 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
-
+hold on
 plot(x, mean_all_still, 'k', 'LineWidth', 2);
 hold on;
-fill([x, fliplr(x)], [sem_all_still - sem_all_still, fliplr(sem_all_still + sem_all_still)], 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+fill([x, fliplr(x)], [mean_all_still - sem_all_still, fliplr(mean_all_still + sem_all_still)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 
 axis tight
 
@@ -181,8 +181,56 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-%print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
 
+%%
+selected_loc_animals=[2,4,11,10]; 
+selected_stationary_animals=[2,4,11,10]; 
+
+mean_all_locomotion=100*nanmean(average_locomotion(selected_loc_animals,:),1);
+sem_all_locomotion=100*nanstd(average_locomotion(selected_loc_animals,:),1)./sqrt(size(average_locomotion(selected_loc_animals,:), 1));
+
+mean_all_still=100*nanmean(average_stiationary,1);
+sem_all_still=100*nanstd(average_stiationary,1)./sqrt(size(average_stiationary, 1));
+
+x = 1:numel(mean_all_locomotion);
+
+figure(1)
+% Plot the mean data
+plot(x, mean_all_locomotion, 'r', 'LineWidth', 2);
+hold on;
+% Create a shaded region for the SEM
+fill([x, fliplr(x)], [mean_all_locomotion - sem_all_locomotion, fliplr(mean_all_locomotion + sem_all_locomotion)], 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+hold on
+plot(x, mean_all_still, 'k', 'LineWidth', 2);
+hold on;
+fill([x, fliplr(x)], [mean_all_still - sem_all_still, fliplr(mean_all_still + sem_all_still)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+
+axis tight
+
+ylabel('Pupil size change (%)', 'FontSize',16,'Color','k');
+xlabel('Directions (deg)','FontSize',16,'Color','k');
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-10, 30.1]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+
+print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
+
+%%
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+
+
+data_locomotion=average_locomotion(selected_loc_animals,:);
+data_locomotion_nasal=data_locomotion(:,order_nasal);
+data_locomotion_temporal=data_locomotion(:,order_temporal);
+
+data_stationary=average_stiationary;
+data_stationary_nasal=data_stationary(:,order_nasal);
+data_stationary_temporal=data_stationary(:,order_temporal);
 
 %%
 animal_id_list=unique(new_pupil_data.animal_id);

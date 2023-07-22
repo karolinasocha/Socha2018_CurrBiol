@@ -112,7 +112,7 @@ end
 
 %%
 example_animal=40;
-ylimitation=[-1 1.5];
+ylimitation=[-1 10];
 %ylimitation_velocity=[0 8]
 pre_frames=round(2*expt2{example_animal}.frameRate)
 post_frames=round(8*expt2{example_animal}.frameRate)
@@ -374,10 +374,10 @@ title '60-240';
 
 set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\Figure1C\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_fixed.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'SupplementaryFigure1C_summary_velocity_13mice_fixed.pdf']);
 
 %%
-ylimitation_areazscored=[-0.5 1.5];
+ylimitation_areazscored=[-0.5 4];
 
 frameRate=315/10;
 
@@ -385,7 +385,6 @@ pre_frames=round(2*frameRate)
 post_frames=round((2+5+3)*frameRate)
 stim_frames=pre_frames+round(5*frameRate)
 val=[-2.2,0,5,8];
-
 
 
 fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
@@ -423,4 +422,4 @@ end
 
 set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\Figure1C\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_areaDifference.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'SupplementaryFigure1C_summary_velocity_13mice_zscored_areaDifference.pdf']);
