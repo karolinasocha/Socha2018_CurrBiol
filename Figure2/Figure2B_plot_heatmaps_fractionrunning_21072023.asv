@@ -108,20 +108,19 @@ for nround=1:8
     
     mean_pupil(nround,:)=nanmean(data_set_pupil_sorted(start_epoch(nround):end_epoch(nround),4:end),1);
     nanstd_mean_pupil(nround,:)=nanstd(data_set_pupil_sorted(start_epoch(nround):end_epoch(nround),4:end)./sqrt(size_bin));
-
-    animal_id_sess{nround}=data_set_pupil_sorted(start_epoch(nround):end_epoch(nround),1);
-    session_id_sess{nround}=data_set_pupil_sorted(start_epoch(nround):end_epoch(nround),2)';
+    clear tmp_pupil_mean
+    clear data_nasal
+    clear data_temporal
+    tmp_pupil_mean=data_set_pupil_sorted(start_epoch(nround):end_epoch(nround),4:end);
+    data_nasal=tmp_pupil_mean(:,order_nasal);
+    data_temporal=tmp_pupil_mean(:,order_temporal);
+    [pval_trials(nround), hval_trials(nround)]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    [hval_trials_tt(nround), pval_trials_tt(nround)]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+    
 end
 %%
 
     %% plot every 10
-
-    
-% %ax_average_trace=axes('Position',[0.450 0.2 0.05 0.7])
-% av_mean_running_flip=flip(mean_velocity',1);
-% nanstd_mean_running_flip=flip(nanstd_mean_velocity',1);
-% av_fraction_running_flip=flip(av_fraction_running,1);
-% av_trace_flip=flip(mean_pupil,1);
 
 height_plot=0.7;
 height_subplot=height_plot/nround;
@@ -157,10 +156,6 @@ clf
      set(gca,'box','off','tickdir','out',...
           'layer','top','color','none','fontsize',10,'ticklength',get(gca,'ticklength')*3)
     set(gca,'Visible','off');
-    %str_fraction_vel=sprintf('fract=%.1f',100*av_fraction_running_flip(iiplot));
-    %str_mean_vel=sprintf('\nmean=%.2f cm/s',av_mean_running_flip(iiplot));
-    %str_nanstdf_vel=sprintf('\nstd=%.2f cm/s',nanstd_mean_running_flip(iiplot));
-    %text(20,-0.5+height_subplot*(iiplot-1),[str_fraction_vel str_mean_vel str_nanstdf_vel]);
 
  end
 title('Av Pupil')     
@@ -170,6 +165,9 @@ title('Av Pupil')
    print(gcf,'-dpdf',[filepathanalysis, 'Figure2B_pupil_diff_fraction_running.pdf']);
 
 %% average across same animals
+
+
+
 order_nasal=[11,12,1,2,3,4];
 order_temporal=[5,6,7,8,9,10];
 
@@ -187,14 +185,39 @@ for nround=1:8
     data_nasal=tmp_pupil_mean(:,order_nasal);
     data_temporal=tmp_pupil_mean(:,order_temporal);
     [pval(nround), hval(nround)]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    [hval_tt(nround), pval_tt(nround)]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
     mean_pupil(nround,:)=nanmean(pupil_mean_round{nround},1);
     nanstd_mean_pupil(nround,:)=nanstd(tmp_pupil_mean./sqrt(length(animal_names)));
-
+    nanimals(nround)=length(animal_names)
+    alpha = 0.05;
+    alpha_Bonferroni(nround) = alpha / nanimals(nround);
 end
 
 
 av_trace_flip=flip(mean_pupil,1);
 sem_mean_pupil=flip(nanstd_mean_pupil);
+%%
+for nround=1:8
+
+    if pval_tt(nround)<alpha_Bonferroni(nround)
+        significance_sign{nround}='*'
+    else
+        significance_sign{nround}='ns'
+    end
+end
+%significance_sign = {'*'}    {'ns'}    {'*'}    {'*'}    {'*'}    {'*'}    {'ns'}    {'ns'}
+%%
+ntrials=50
+alpha_Bonferroni_trials=0.05/ntrials;
+for nround=1:8
+
+    if pval_trials(nround)<alpha_Bonferroni_trials
+        significance_sign_trials{nround}='*'
+    else
+        significance_sign_trials{nround}='ns'
+    end
+end
+
 %%
  %ax_average_trace=axes('Position',[0.450 0.2+height_subplot*iiplot 0.05 height_subplot])
 figure
