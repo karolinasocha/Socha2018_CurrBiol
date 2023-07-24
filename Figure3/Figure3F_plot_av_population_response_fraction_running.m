@@ -426,9 +426,11 @@ plot([xstimulus_start;xstimulus_end],ystimulus_limit_top,'k','linewidth',3);
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.pdf']);
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.svg']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.svg']);
 
+%print('-painters','-depsc','Figure3F_plot_avdFF_calcium_response_population_fractionrunning')
+print('-painters','-dpdf','Figure3F_plot_avdFF_calcium_response_population_fractionrunning')
 
 %% plot average over 50 trials after sorting regarding to fraction of running
 colors_line=parula(12)
