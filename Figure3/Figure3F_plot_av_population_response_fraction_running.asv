@@ -338,96 +338,6 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\d
 %print(gcf,'-dpdf',[filepathanalysis, 'plot_avdFF_velocity_calcium_response_population_awake_allexperiments_fractionrunning_v2_withstimulus.pdf']);
 
 %%
-colors_line=parula(12)
-figure
-
-    ax_histogram_velocityfraction=axes('Position',[0.6 0.2 0.05 0.3])
-    plot(100*val',1:size(val,2),'.r');
-    title('Fraction running')     
-    xlabel('Fraction running (%)');
-    set(gca, 'YDir','reverse');
-    hold on
-    plot([25 25],[0 size(val,2)],'--k');
-    plot([75 75],[0 size(val,2)],'--k');
-    axis tight
-    set(ax_histogram_velocityfraction,'xlim',[0 100],'xtick',[0:25:100],'ytick',[0:50:309]);
-    ylim([0 309]);
-       set(gca,'box','off','tickdir','out',...
-         'layer','top','color','none','fontsize',10,'ticklength',get(gca,'ticklength')*3)
-   set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
-   filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-   print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fright_velocity_fraction_running.pdf']);
-  
-  %%
-  
-figure
-clf
-
-for iStim =1:6
-    ax_averageresponse_trials(iStim)=axes('Position',[0.32 0.45-(iStim-1)*(0.3/6) 0.2 0.3/6]);
-end
-
-start_number=1:50:309;
-end_number=50:50:309;
-end_number(6)=309;
-
-for iStim =1:6
-    
-    axes(ax_averageresponse_trials(iStim))
-    %plot(nanmean(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1),'k','linewidth',2);
-    animal_tmp=animal_id_trials_sorted(start_number(iStim):end_number(iStim));
-    animal_list_tmp=unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim)));
-    clear mean_session_array
-    clear mean_animal_sel_calcium
-    
-    for i=1:length(animal_list_tmp)
-        tmp_index=find(animal_tmp==animal_list_tmp(i));
-        tmp_calcium=calcium_response_array_ord(:,start_number(iStim):end_number(iStim));
-        mean_animal_sel_calcium{i}=nanmean(tmp_calcium(:,tmp_index),2);
-    end
-
-    mean_session_array=cell2mat(mean_animal_sel_calcium);
-    number_animals=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
-    meanData=nanmean(mean_session_array',1);
-    %semData=nanstd(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1)./sqrt(size(calcium_response_array_ord(:,start_number(iStim):end_number(iStim)),2));
-    semData=nanstd(mean_session_array',1)./sqrt(number_animals);
-   
-    x = 1:size(meanData,2);
-
-    % Plot the mean data
-    plot(x, meanData, 'k', 'LineWidth', 2);
-    hold on;
-    % Create a shaded region for the SEM
-    fill([x, fliplr(x)], [meanData - semData, fliplr(meanData + semData)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
-
-    ylim([0 120]);
-    hold on
-    plot([0 size(calcium_response_array_ord,1)],[50 50],'--k');
-    axis off
-end
-
-axes(ax_averageresponse_trials(6));
-hold on
-plot([size(calcium_response_array_ord,1)+20 size(calcium_response_array_ord,1)+20],[0 50],'linewidth',2,'color','k')
-
-axes(ax_averageresponse_trials(1));
-xstimulus_start=ones(1,12)*stim_start:epoch_duration:epochlength;
-xstimulus_end=ones(1,12)*(stim_start+159):epoch_duration:epochlength;
-
-ystimulus_limit=[zeros(1,12);5*ones(1,12)];
-ystimulus_limit_top=[120*ones(1,12);120*ones(1,12)];
-
-%plot([xstimulus_start;xstimulus_start],ystimulus_limit,'-b');
-%hold on
-%plot([xstimulus_end;xstimulus_end],ystimulus_limit,'k');
-
-hold on
-plot([xstimulus_start;xstimulus_end],ystimulus_limit_top,'k','linewidth',3);
-
-set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.pdf']);
-
 
 %% plot average over 50 trials after sorting regarding to fraction of running
 colors_line=parula(12)
@@ -511,47 +421,8 @@ plot([xstimulus_start;xstimulus_end],ystimulus_limit_top,'k','linewidth',3);
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_velocity_calcium_response_population_awake_allexperiments_fractionrunning_v2_withstimulus.pdf']);
-
 %%
-
-%%
-stim_start=63;
-stim_end=stim_start+157.5;
+    stim_start=63;
+    stim_end=stim_start+157.5;
     
-
-for iStim =1:6
-    
-    axes(ax_averageresponse_trials(iStim))
-    %plot(nanmean(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1),'k','linewidth',2);
-    animal_tmp=animal_id_trials_sorted(start_number(iStim):end_number(iStim));
-    animal_list_tmp=unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim)));
-    clear mean_session_array
-    clear mean_animal_sel_calcium
-    
-    for i=1:length(animal_list_tmp)
-        tmp_index=find(animal_tmp==animal_list_tmp(i));
-        tmp_calcium=calcium_response_array_ord(:,start_number(iStim):end_number(iStim));
-        mean_animal_sel_calcium{i}=nanmean(tmp_calcium(:,tmp_index),2);
-    end
-
-    mean_session_array=cell2mat(mean_animal_sel_calcium);
-    number_animals=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
-    meanData=nanmean(mean_session_array',1);
-    %semData=nanstd(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1)./sqrt(size(calcium_response_array_ord(:,start_number(iStim):end_number(iStim)),2));
-    semData=nanstd(mean_session_array',1)./sqrt(number_animals);
-   
-    x = 1:size(meanData,2);
-
-    % Plot the mean data
-    plot(x, meanData, 'k', 'LineWidth', 2);
-    hold on;
-    % Create a shaded region for the SEM
-    fill([x, fliplr(x)], [meanData - semData, fliplr(meanData + semData)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
-
-    ylim([0 120]);
-    hold on
-    plot([0 size(calcium_response_array_ord,1)],[50 50],'--k');
-    axis off
-end
-
 
