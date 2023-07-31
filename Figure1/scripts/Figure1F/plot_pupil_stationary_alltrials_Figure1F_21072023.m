@@ -443,3 +443,16 @@ box off
     [pval_all, h0_all, stats_all]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
     number_increased_diam_animals=length(find(pval_still<0.05));
     number_increased_diam_animals
+    
+    %% PLOT PROPORTIONS STATIONARY VS LOCOMOTION
+    
+%     
+% for ii=1:size(stilltrial,2)
+% number_still_trials{ii}=sum(stilltrial{ii}(:,1:end-1))
+% number_locomotion_trials{ii}=sum(loctrial{ii}(:,1:end-1))
+% number_nondefined_trials{ii}=sum(nondefined{ii}(:,1:end-1))
+% end
+% 
+% number_still_trials_array=cell2mat(number_still_trials');
+% number_locomotion_trials_array=cell2mat(number_locomotion_trials');
+% number_nondefined_trials_array=cell2mat(number_nondefined_trials');

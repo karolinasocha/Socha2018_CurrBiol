@@ -518,9 +518,19 @@ print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_velocity_calcium_respo
 %%
 
 %%
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
+
+stim_start=2*315/10;
+epoch_duration=10*315/10;
+
 stim_start=63;
 stim_end=stim_start+157.5;
-    
+
+for istim=1:12
+stimulus_onset(istim)=stim_start+(istim-1)*epoch_duration
+stimulus_offset(istim)=(stim_start+157.5)+(istim-1)*epoch_duration
+end
 
 for iStim =1:6
     
@@ -536,12 +546,23 @@ for iStim =1:6
         tmp_calcium=calcium_response_array_ord(:,start_number(iStim):end_number(iStim));
         mean_animal_sel_calcium{i}=nanmean(tmp_calcium(:,tmp_index),2);
     end
-
+    
+    clear mean_session_array_perStim
     mean_session_array=cell2mat(mean_animal_sel_calcium);
-    number_animals=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
+    for istim=1:12
+        mean_session_array_perStim(istim,:)=nanmean(mean_session_array(stimulus_onset(istim):stimulus_offset(istim),:),1)
+    end
+    clear for_test_nasal_data
+    clear for_test_temporal_data
+    for_test_nasal_data=mean_session_array_perStim(order_nasal,:);
+    for_test_temporal_data=mean_session_array_perStim(order_temporal,:);
+    [pval(iStim), h0(iStim)]=signrank(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
+
+
+    number_animals(iStim)=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
     meanData=nanmean(mean_session_array',1);
     %semData=nanstd(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1)./sqrt(size(calcium_response_array_ord(:,start_number(iStim):end_number(iStim)),2));
-    semData=nanstd(mean_session_array',1)./sqrt(number_animals);
+    semData=nanstd(mean_session_array',1)./sqrt(number_animals(iStim));
    
     x = 1:size(meanData,2);
 
@@ -555,6 +576,21 @@ for iStim =1:6
     hold on
     plot([0 size(calcium_response_array_ord,1)],[50 50],'--k');
     axis off
+    
+    alpha = 0.05;
+    alpha_Bonferroni(iStim) = alpha / number_animals(iStim);
+
+    % Compare each p-value to the Bonferroni-corrected significance level
+
+    if pval(iStim) <= alpha_Bonferroni(iStim)
+        Bonferroni_correction(iStim)=1;
+        disp(['Iteration ', num2str(iStim), ': Reject null hypothesis']);
+    else
+        disp(['Iteration ', num2str(iStim), ': Fail to reject null hypothesis']);
+        Bonferroni_correction(iStim)=0;
+    end
+
 end
 
 
+number_animals
