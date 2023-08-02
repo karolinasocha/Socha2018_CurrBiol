@@ -1,4 +1,7 @@
 
+%% edit 02-August-2023 by K.Socha
+% this script is used to generate paper figure 3E 
+% density plot of anesthesia responses nasal vs temporal (non-significant)
 
 clear all
 loadcolors
@@ -52,7 +55,7 @@ for ii=1:size(newdir,2)
     load(fileNametcs)
 
 	stats_boutons{ii}=stats_version_mean_values.stats_boutons;
-    velocity{ii}= tcs{ii}.velo_final(:,2);
+    velocity{ii}= tcss_awake{ii}.velo_final(:,2);
     
 end
 %% plot density plots
@@ -146,7 +149,7 @@ clear animals_array
  pattern_string='KS'
 [animals_array]=find_sameanimals(newdir,pattern_string)
 
-[x y]=find(animals_array==iAn)
+% [x y]=find(animals_array==iAn)
 %animals_array(iAn,~isnan(animals_array(iAn,:)))
 
 % for iAn=1:size(newdir,2)
@@ -173,8 +176,8 @@ vtime=1:length(velocity{iAn});
 vval=smoothdata(velocity{iAn},'sgolay'); % used to be smooth
 clear tstart
 clear tstop
-locthresh=0;
-stillthresh=25;
+locthresh=0; % to select all trials
+stillthresh=25; % to select all trials
 perthresh_stationary=0.95;
 perthresh=0.05;
 
@@ -348,7 +351,17 @@ for iruns=1:n_runs
        clear animal_session_indexes
        clear random_session
        animal_session_indexes=find(animal_id==animal_subset(iAn));
-       random_session=randperm(numel(animal_session_indexes));
+       % added weight probability
+       clear weights
+       clear random_session
+       weights=(1/length(animal_session_indexes))*(ones(1,numel(animal_session_indexes)));
+
+       numSamples = 1; % number of session selected
+       random_session = randsample(numel(animal_session_indexes), numSamples, true, weights);
+
+       %random_session=randperm(numel(animal_session_indexes)); % this was
+       %before change 202-08-2023
+
        chosen_session=animal_session_indexes(random_session(1));
        
        for iistim=1:n_pairs
@@ -392,6 +405,7 @@ for iruns=1:n_runs
                 temporaldirrawdatadistribution=ddata_temporal_still;
                 %x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
                 %x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
+                
                 tmp_x_nasal=datasample(nasaldirrawdatadistribution,ndrawnpoints,'replace',true);
                 tmp_x_temporal=datasample(temporaldirrawdatadistribution,ndrawnpoints,'replace',true);
                 
@@ -420,7 +434,7 @@ end
 p_value_ttest2 = sum(pval_bootstrap_ttest2 <= p_original_ttest2) / n_runs;
 p_value_stats_signrank = sum(stats_bootstraps_signrank <= stats_original_signrank) / n_runs;
 p_value_signrank = sum(pval_bootstrap_signrank <= p_original_signrank) / n_runs;
-
+[p_value_signrank, p_value_ttest2, p_value_stats_signrank]
 %p_value = sum(pval_bootstrap_signrank <= pval_signrank) / n_runs;
  
 %% PLOT HEAT DENSITY MAP
@@ -446,7 +460,7 @@ plot([0 150],[0,150],'w-')
 %title(sprintf('Resampled %d times, each sample %d trials',nresampling,ndrawnpoints))
 ylabel('dF Nasal directions (%)')
 xlabel('dF Temporal directions (%)')
-title('All Trials')
+title('Awake Trials')
 caxis([0 0.0025])
 
 set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickdir','out',...

@@ -1,6 +1,7 @@
 
-
-
+%% this is script to generate Figure3F Stationary trials comparison
+% edited 02-August-2023 by KSocha
+% it has weighted probability to select session
 
 %% plot density plots
 %% load data
@@ -129,18 +130,18 @@ end
 
 %%
 clear animals_array
- addpath 'G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\qunatify_same_animals'
- pattern_string='KS'
-[animals_array]=find_sameanimals(newdir,pattern_string)
-
-[x y]=find(animals_array==iAn)
-%animals_array(iAn,~isnan(animals_array(iAn,:)))
-
-for iAn=1:size(newdir,2)
-    [x y]=find(animals_array==iAn);
-    x_animal(iAn)=x;
-    y_session(iAn)=y;
-end
+%  addpath 'G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\qunatify_same_animals'
+%  pattern_string='KS'
+% [animals_array]=find_sameanimals(newdir,pattern_string)
+% 
+% [x y]=find(animals_array==iAn)
+% %animals_array(iAn,~isnan(animals_array(iAn,:)))
+% 
+% for iAn=1:size(newdir,2)
+%     [x y]=find(animals_array==iAn);
+%     x_animal(iAn)=x;
+%     y_session(iAn)=y;
+% end
 %%
 clear resp_loc_velo_trials
 clear resp_still_velo_trials
@@ -160,9 +161,15 @@ vtime=1:length(velocity{iAn});
 vval=smoothdata(velocity{iAn},'sgolay'); % used to be smooth
 clear tstart
 clear tstop
+% locthresh=1;
+% stillthresh=0.5;
+% perthresh_stationary=0.95;
+% perthresh=0.05;
+
 locthresh=1;
-stillthresh=1;
-perthresh=0.95;
+stillthresh=0.25;
+perthresh_stationary=0.95;
+perthresh=0.1;
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -178,10 +185,7 @@ end;
 
 % [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials(1:length(vval),vval,...
 %     tstart,tstop,locthresh,stillthresh,perthresh);
-locthresh=1;
-stillthresh=1;
-perthresh_stationary=0.95;
-perthresh=0.05;
+
   [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials_val_stationary(1:length(vval),vval,...
       tstart,tstop,locthresh,stillthresh,perthresh,perthresh_stationary);
 
@@ -338,9 +342,27 @@ for iruns=1:n_runs
        clear ddata_nasal_still
        
     for iAn=1:length(animal_subset)
+        
+       clear chosen_session
+       clear animal_session_indexes
+       clear random_session
        animal_session_indexes=find(animal_id==animal_subset(iAn));
-       random_session=randperm(numel(animal_session_indexes));
+       % added weight probability
+       clear weights
+       clear random_session
+       weights=(1/length(animal_session_indexes))*(ones(1,numel(animal_session_indexes)));
+
+       numSamples = 1; % number of session selected
+       random_session = randsample(numel(animal_session_indexes), numSamples, true, weights);
+
+       %random_session=randperm(numel(animal_session_indexes)); % this was
+       %before change 202-08-2023
+
        chosen_session=animal_session_indexes(random_session(1));
+       % below section was before change 02-08-2023
+%        animal_session_indexes=find(animal_id==animal_subset(iAn));
+%        random_session=randperm(numel(animal_session_indexes));
+%        chosen_session=animal_session_indexes(random_session(1));
        
        for iistim=1:n_pairs
         
@@ -405,9 +427,10 @@ end
 p_value_ttest2 = sum(pval_bootstrap_ttest2 <= p_original_ttest2) / n_runs;
 p_value_stats_signrank = sum(stats_bootstraps_signrank <= stats_original_signrank) / n_runs;
 p_value_signrank = sum(pval_bootstrap_signrank <= p_original_signrank) / n_runs;
-
+[p_value_ttest2, p_value_stats_signrank, p_value_signrank]
 %p_value = sum(pval_bootstrap_signrank <= pval_signrank) / n_runs;
  
+% p_value_stats_signrank = 0.001
 %% PLOT HEAT DENSITY MAP
 
 figure
