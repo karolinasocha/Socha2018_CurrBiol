@@ -72,7 +72,7 @@ axis tight
 
 ylabel('Velocity change (cm/s)', 'FontSize',16,'Color','k');
 xlabel('Directions (deg)','FontSize',16,'Color','k');
-set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-5, 5]);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-1.5, 5]);
 set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
 box off
 
