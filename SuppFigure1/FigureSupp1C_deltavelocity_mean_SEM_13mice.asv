@@ -85,7 +85,7 @@ saveas(gcf, [filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged.pdf']
 
 % Define the confidence level (1 - alpha)
 alpha_95 = 0.05; % 95% confidence level
-alpha_5 = 0.95;  % 5% confidence level
+alpha_5 = 0.05;  % 5% confidence level
 
 % Calculate the sample mean and standard deviation
 sample_mean = nanmean(mean_pupil_delta);
@@ -115,18 +115,18 @@ plot(x, meanData, 'k', 'LineWidth', 2);
 hold on;
 
 % Create a shaded region for the SEM
-fill([x, fliplr(x)], [ci_low_95, fliplr(ci_high_95)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+fill([x, fliplr(x)], [ci_low_5, fliplr(ci_high_95)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 axis tight
 
 ylabel('Velocity change (cm/s)', 'FontSize',16,'Color','k');
 xlabel('Directions (deg)','FontSize',16,'Color','k');
-set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-3, 8]);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[-1.5, 5]);
 set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
 box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\SuppFigure1\'];
-%print(gcf,'-dpdf',[filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged_CI95.pdf'])
+%print(gcf,'-dpdf',[filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged.pdf'])
 
 %% scatter plot COLOR CODED ANIMAL
 
