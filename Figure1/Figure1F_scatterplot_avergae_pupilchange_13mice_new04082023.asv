@@ -71,6 +71,29 @@ for iAn=1:length(trials_nasal)
       
 end
 %%
+alpha=0.05
+main_array_temporal=cell2mat(trials_temporal_mean');
+main_array_nasal=cell2mat(trials_nasal_mean');
+num_animals=size(main_array_nasal,1)
+
+mean_values_nasal_main = nanmean(main_array_nasal(:));
+sem_values_nasal_main = std(main_array_nasal(:)) / sqrt(num_animals);
+
+mean_values_temporal_main = nanmean(main_array_temporal(:));
+sem_values_temporal_main = std(main_array_temporal(:)) / sqrt(num_animals);
+    
+t_value = tinv(1 - alpha/2, num_animals - 1);
+
+% Calculate confidence intervals
+lower_ci_nasal_main = mean_values_nasal_main - t_value * sem_values_nasal_main;
+upper_ci_nasal_main = mean_values_nasal_main + t_value * sem_values_nasal_main;
+
+% Calculate confidence intervals
+lower_ci_temporal_main = mean_values_temporal_main - t_value * sem_values_temporal_main;
+upper_ci_temporal_main = mean_values_temporal_main + t_value * sem_values_temporal_main;
+
+    
+%% WITH SEM
 colors=jet(13);
 colors_transparency=colors;
 colors_transparency=colors_transparency;
@@ -88,7 +111,7 @@ for iAn=1:length(trials_temporal_mean)
     
     % Create a plot with vertical error bars and transparency (alpha = 0.5)
     %x = 1:size(data_example, 2);
-    errorbar(100*mean_values_temporal{iAn}, 100*mean_values_nasal{iAn},100*(mean_values_nasal{iAn} - sem_values_nasal{iAn}),100*(mean_values_nasal{iAn} + sem_values_nasal{iAn}), 100*(mean_values_temporal{iAn} - sem_values_temporal{iAn}),100*( mean_values_temporal{iAn} + sem_values_temporal{iAn}), 'o','MarkeSize',10, 'MarkerFaceColor', colors(iAn,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k');
+    errorbar(100*mean_values_temporal{iAn}, 100*(mean_values_nasal{iAn} - sem_values_nasal{iAn}),100*(mean_values_nasal{iAn} + sem_values_nasal{iAn}),100*mean_values_nasal{iAn}, 100*(mean_values_temporal{iAn} - sem_values_temporal{iAn}),100*( mean_values_temporal{iAn} + sem_values_temporal{iAn}), 'o', 'MarkerFaceColor', colors(iAn,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
     hold on;
 
     % Create a plot with horizontal  and vertical CI
@@ -102,7 +125,48 @@ plot([-100 100], [-100 100],'--k');
 ylim([-10, 70])
 xlim([-10, 40])
 
+%% 
+%% WITH CI
+colors=jet(13);
+colors_transparency=colors;
+colors_transparency=colors_transparency;
+colors_transparency(:,4)=0.5;
+figure(2)
+clf
+for iAn=1:length(trials_temporal_mean)
+    data_temporal=trials_temporal_mean{iAn};
+    data_nasal=trials_nasal_mean{iAn};
+    hold on
+    %plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+    
+    %plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors_transparency(iAn,:),'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+    s1=scatter(100*data_temporal(:),100*data_nasal(:),'o','MarkerFaceColor',colors(iAn,:),'MarkerEdgeColor','k');
+    s1.MarkerFaceAlpha = .5;
 
+    % SEM
+    %errorbar(100*mean_values_temporal{iAn}, 100*(mean_values_nasal{iAn} - sem_values_nasal{iAn}),100*(mean_values_nasal{iAn} + sem_values_nasal{iAn}),100*mean_values_nasal{iAn}, 100*(mean_values_temporal{iAn} - sem_values_temporal{iAn}),100*( mean_values_temporal{iAn} + sem_values_temporal{iAn}), 'o', 'MarkerFaceColor', colors(iAn,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
+    hold on;
+    % Create a plot with horizontal  and vertical CI
+    %errorbar(100*mean_values_temporal{iAn}, 100*mean_values_nasal{iAn},100*(mean_values_nasal{iAn} - lower_ci_nasal{iAn}),100*( upper_ci_nasal{iAn} - mean_values_nasal{iAn}), 100*(mean_values_temporal{iAn} - lower_ci_temporal{iAn}),100*( upper_ci_temporal{iAn} - mean_values_temporal{iAn}),'o', 'MarkerFaceColor', colors(iAn,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
+    s2=scatter(100*mean_values_temporal{iAn}, 100*mean_values_nasal{iAn},'o','MarkerFaceColor',colors(iAn,:),'MarkerEdgeColor','k','SizeData', 100);
+end
+
+hold on
+errorbar(100*mean_values_temporal_main, 100*mean_values_nasal_main, 100*(mean_values_nasal_main- lower_ci_temporal_main),100*(upper_ci_nasal_main - mean_values_nasal{iAn}), 100*(mean_values_temporal_main - lower_ci_temporal_main),100*(upper_ci_temporal_main - mean_values_temporal_main),'o', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
+
+plot([-100 100], [-100 100],'--k');
+
+ylim([-10, 70])
+xlim([-10, 40])
+
+ylabel('Pupil size change (%) NASAL', 'FontSize',18,'Color','k');
+xlabel('Pupil size change (%) TEMPORAL','FontSize',18,'Color','k');
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_raw_diam_relative_delta_pupil_SEM_sessions.pdf']);
 
 %%
 % plot
