@@ -57,7 +57,7 @@ for iAn=1:length(pupil_animals_cell)
     data_nasal=pupil_animals_cell{iAn}(order_nasal)
     data_temporal=pupil_animals_cell{iAn}(order_temporal)
     hold on
-%    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
+%   plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
     plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors(iAn,:),'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
 
     data_nasal_all{iAn}=nanmean(data_nasal);
