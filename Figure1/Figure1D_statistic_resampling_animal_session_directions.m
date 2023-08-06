@@ -1,4 +1,5 @@
-
+% this script is used in Figure 1E; 
+% modified 06 August 2023 by K.Socha
 % select same number of animals
 % select same number of sessions
 

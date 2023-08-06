@@ -144,7 +144,7 @@ set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
 box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+%filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 %print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_sessions.pdf']);
 %% FIGURE 1D
 order_nasal
@@ -174,7 +174,7 @@ for iStim=1:6
     data_temporal=pupil_stim{order_temporal(iStim)};
     hold on
 %   plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', [0.7,0.7,0.7],'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
-    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors_scatter(iStim,:),'MarkerEdgeColor', [0.5, 0.5, 0.5],); %colors_scatter(iSess,:)
+    plot(100*data_temporal(:),100*data_nasal(:),'o','MarkerSize', 6,'MarkerFaceColor', colors_scatter(iStim,:),'MarkerEdgeColor', [0.5, 0.5, 0.5]); %colors_scatter(iSess,:)
 
     data_nasal_all{iAn}=nanmean(data_nasal);
     data_temporal_all{iAn}=nanmean(data_temporal);
