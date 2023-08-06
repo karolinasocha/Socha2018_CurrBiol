@@ -39,7 +39,7 @@ for ipair=1:length(pairs)
     pair_sel=pairs(ipair,:);
     
     permuted_pupil_data_cell={};
-    ks2stat=nan(nruns,1);        
+    ks2stat=nan(nruns,1);       
     for iruns=1:nruns;
         
         data_rand=[];

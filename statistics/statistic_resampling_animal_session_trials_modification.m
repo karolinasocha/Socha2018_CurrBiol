@@ -24,6 +24,9 @@ nAnimal_sel=5
 nruns = 1000
 numSelections=5
 
+alpha = 0.05;
+alpha_Bonferroni = alpha / nruns;
+    
 %permuted_pupil_data_cell=cell(nAnimal_sel, nruns);
 permuted_pupil_data_cell={};
 
