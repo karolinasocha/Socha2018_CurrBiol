@@ -149,7 +149,7 @@ clear animals_array
  pattern_string='KS'
 [animals_array]=find_sameanimals(newdir,pattern_string)
 
-[x y]=find(animals_array==iAn)
+% [x y]=find(animals_array==iAn)
 %animals_array(iAn,~isnan(animals_array(iAn,:)))
 
 % for iAn=1:size(newdir,2)
@@ -334,6 +334,9 @@ clear random_indices
 for iruns=1:n_runs
     x_nasal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
     x_temporal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
+    tmpx = [];
+    tmpy = [];
+
 
     % # chose randomly animals
     random_indices = randperm(numel(animals_ids_unique));
@@ -421,21 +424,30 @@ for iruns=1:n_runs
     tmpy = [tmpy,x_temporal2];
        
     end
-    %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
-    [~, pval_bootstrap_ttest2(iruns)]=ttest2(tmpx(:),tmpy(:),'Tail','right');
+    [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     
-    [pval_bootstrap, ~, stats_bootstrap] = signrank(tmpx(:),tmpy(:),'Tail','right');
+    [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
     pval_bootstrap_signrank(iruns)=pval_bootstrap;
     
+    [pval_bootstrap_ranksum(iruns), ~, stats_bootstrap_ranksum] = ranksum(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+
+    [~, pval_bootstrap_kstest2(iruns), stats_bootstrap_kstest2]=kstest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','larger');
+
 end
 
 %% PVAL TO BE REPORTED IN THE PAPER WITH BONFERRONI CORRECTION
-p_value_ttest2 = sum(pval_bootstrap_ttest2 <= p_original_ttest2) / n_runs;
-p_value_stats_signrank = sum(stats_bootstraps_signrank <= stats_original_signrank) / n_runs;
-p_value_signrank = sum(pval_bootstrap_signrank <= p_original_signrank) / n_runs;
-[p_value_signrank, p_value_ttest2, p_value_stats_signrank]
-%p_value = sum(pval_bootstrap_signrank <= pval_signrank) / n_runs;
+prctile_tresh=97.5;
+fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+prctile_tresh=2.5;
+fprintf('kstest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
  
 %% PLOT HEAT DENSITY MAP
 

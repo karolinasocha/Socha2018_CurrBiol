@@ -252,8 +252,8 @@ n_pairs = 6;
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
-ddata_temporal_loc=nan([length(newdir), n_pairs, 10]);
-ddata_nasal_loc=nan([length(newdir), n_pairs,10]);
+ddata_temporal_loc2=nan([length(newdir), n_pairs, 10]);
+ddata_nasal_loc2=nan([length(newdir), n_pairs,10]);
 
 for iAn=1:length(newdir)
        for iistim=1:n_pairs
@@ -275,19 +275,32 @@ for iAn=1:length(newdir)
         tmp_nasal=nanmean(av_loc_eye_trials{iAn}(nasal_trials_loc,nasal_trials_loc)',1);;
         tmp_temporal=nanmean(av_loc_eye_trials{iAn}(temporal_trials_loc,temporal_trials_loc)',1);
 
-        ddata_temporal_loc(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
-        ddata_nasal_loc(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
+        ddata_temporal_loc2(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
+        ddata_nasal_loc2(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
         % cell2mat((stim_deg_still))'
                 
        end
 end
 
-[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_loc(:),ddata_temporal_loc(:),'Tail','right');
+
+[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_loc2(:),ddata_temporal_loc2(:),'Tail','right');
 stats_original_signrank = stats_original.signedrank;
 
-[~, p_original_ttest2, ~] = ttest2(ddata_nasal_loc(:),ddata_temporal_loc(:),'Tail','right');
+[p_original_ranksum, ~, stats_original_ranksum] = ranksum(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','right');
 
+[~, p_original_ttest2, ~] = ttest2(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','right');
 
+[~, p_original_kstest2, stat_original_kstest2]=kstest2(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','larger');
+
+fprintf('kstest2 original p-value:  %.2e\n', p_original_kstest2);
+fprintf('ttest2 original p-value:  %.2e\n', p_original_ttest2);
+fprintf('ranksum original p-value:  %.2e\n', p_original_ranksum);
+fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
+
+% kstest2 original p-value:  9.94e-01
+% ttest2 original p-value:  1.05e-13
+% ranksum original p-value:  2.18e-17
+% signrank original p-value:  2.92e-05
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
 n_runs=1000
@@ -296,27 +309,25 @@ n_sampled_trials=3
 n_pairs = 6;
 ndrawnpoints=3
 
-tmpx = [];
-tmpy = [];
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
 x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
 x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
 
-x_nasal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
-x_temporal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
-
 animals_ids_unique=unique(animal_id);
 
-tmpx = [];
-tmpy = [];
-
-clear animals_rand_selections
-clear animal_subset
-clear random_indices
-
+tmpx_all=[];
+tmpy_all=[];
+    
 for iruns=1:n_runs
+    
+    tmpx = [];
+    tmpy = [];
+
+    clear animal_subset
+    clear random_indices
+
     x_nasal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
     x_temporal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
 
@@ -401,24 +412,46 @@ for iruns=1:n_runs
     end
     tmpx = [tmpx,x_nasal2];
     tmpy = [tmpy,x_temporal2];
+    
+    tmpx_all=[tmpx_all,x_nasal2];
+    tmpy_all=[tmpy_all,x_temporal2];
        
     end
     %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
-    [~, pval_bootstrap_ttest2(iruns)]=ttest2(tmpx(:),tmpy(:),'Tail','right');
+    [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     
-    [pval_bootstrap, ~, stats_bootstrap] = signrank(tmpx(:),tmpy(:),'Tail','right');
+    [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
     pval_bootstrap_signrank(iruns)=pval_bootstrap;
     
-end
+    [pval_bootstrap_ranksum(iruns), ~, stats_bootstrap_ranksum] = ranksum(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
 
-%% PVAL TO BE REPORTED IN THE PAPER WITH BONFERRONI CORRECTION
-p_value_ttest2 = sum(pval_bootstrap_ttest2 <= p_original_ttest2) / n_runs;
-p_value_stats_signrank = sum(stats_bootstraps_signrank <= stats_original_signrank) / n_runs;
-p_value_signrank = sum(pval_bootstrap_signrank <= p_original_signrank) / n_runs;
-[p_value_ttest2, p_value_stats_signrank, p_value_signrank]
-%p_value = sum(pval_bootstrap_signrank <= pval_signrank) / n_runs;
- % p_value_stats_signrank 0; ns
+    [~, pval_bootstrap_kstest2(iruns), stats_bootstrap_kstest2]=kstest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','larger');
+    
+    
+end
+%%
+prctile_tresh=97.5;
+fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 97.5 prctile p-value:  8.67e-01
+% ttest2 bootstrapping 97.5 prctile p-value:  1.00e+00
+% ranksum bootstrapping 97.5 prctile p-value:  1.00e+00
+% signrank bootstrapping 97.5 prctile p-value:  1.00e+00
+
+prctile_tresh=2.5;
+fprintf('kstest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 2.5 prctile p-value:  6.20e-23
+% ttest2 bootstrapping 2.5 prctile p-value:  2.06e-14
+% ranksum bootstrapping 2.5 prctile p-value:  1.29e-14
+% signrank bootstrapping 2.5 prctile p-value:  3.85e-30
 %% PLOT HEAT DENSITY MAP
 
 figure
@@ -426,8 +459,8 @@ vXEdge = linspace(0,150,60);
 vYEdge = linspace(0,150,60);
 
 %mHist2d = hist2d([x_nasal(:),x_temporal(:)],vYEdge,vXEdge)/length(x_nasal(:));
-npoints = sum(isnan(tmpx(:)) & isnan(tmpy(:)))
-mHist2d = hist2d([tmpx(:),tmpy(:)],vYEdge,vXEdge)/npoints;
+npoints = sum(isnan(tmpx_all(:)) & isnan(tmpy_all(:)))
+mHist2d = hist2d([tmpx_all(:),tmpy_all(:)],vYEdge,vXEdge)/npoints;
 
 subplot(221)
 imagesc(vXEdge,vYEdge, mHist2d)

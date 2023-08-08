@@ -1,4 +1,7 @@
 
+%% edit 02-August-2023 by K.Socha
+% this script is used to generate paper figure 3E 
+% density plot of anesthesia responses nasal vs temporal (non-significant)
 
 clear all
 loadcolors
@@ -52,7 +55,7 @@ for ii=1:size(newdir,2)
     load(fileNametcs)
 
 	stats_boutons{ii}=stats_version_mean_values.stats_boutons;
-    velocity{ii}= tcs{ii}.velo_final(:,2);
+    velocity{ii}= tcss_awake{ii}.velo_final(:,2);
     
 end
 %% plot density plots
@@ -146,7 +149,7 @@ clear animals_array
  pattern_string='KS'
 [animals_array]=find_sameanimals(newdir,pattern_string)
 
-[x y]=find(animals_array==iAn)
+% [x y]=find(animals_array==iAn)
 %animals_array(iAn,~isnan(animals_array(iAn,:)))
 
 % for iAn=1:size(newdir,2)
@@ -173,8 +176,8 @@ vtime=1:length(velocity{iAn});
 vval=smoothdata(velocity{iAn},'sgolay'); % used to be smooth
 clear tstart
 clear tstop
-locthresh=0;
-stillthresh=25;
+locthresh=0; % to select all trials
+stillthresh=25; % to select all trials
 perthresh_stationary=0.95;
 perthresh=0.05;
 
@@ -264,8 +267,8 @@ n_pairs = 6;
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
-ddata_temporal_loc=nan([length(newdir), n_pairs, 10]);
-ddata_nasal_loc=nan([length(newdir), n_pairs,10]);
+ddata_temporal_still2=nan([length(newdir), n_pairs, 10]);
+ddata_nasal_still2=nan([length(newdir), n_pairs,10]);
 
 for iAn=1:length(newdir)
        for iistim=1:n_pairs
@@ -287,18 +290,25 @@ for iAn=1:length(newdir)
         tmp_nasal=nanmean(av_still_eye_trials{iAn}(nasal_trials_still,nasal_trials_still)',1);;
         tmp_temporal=nanmean(av_still_eye_trials{iAn}(temporal_trials_still,temporal_trials_still)',1);
 
-        ddata_temporal_still(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
-        ddata_nasal_still(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
-        % cell2mat((stim_deg_still))'
+        ddata_temporal_still2(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
+        ddata_nasal_still2(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
                 
        end
 end
 
-[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_still(:),ddata_temporal_still(:),'Tail','right');
+[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_still2(:),ddata_temporal_still2(:),'Tail','right');
 stats_original_signrank = stats_original.signedrank;
 
-[~, p_original_ttest2, ~] = ttest2(ddata_nasal_still(:),ddata_temporal_still(:),'Tail','right');
+[p_original_ranksum, ~, stats_original_ranksum] = ranksum(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','right');
 
+[~, p_original_ttest2, ~] = ttest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','right');
+
+[~, p_original_kstest2, stat_original_kstest2]=kstest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','larger');
+
+fprintf('kstest2 original p-value:  %.2e\n', p_original_kstest2);
+fprintf('ttest2 original p-value:  %.2e\n', p_original_ttest2);
+fprintf('ranksum original p-value:  %.2e\n', p_original_ranksum);
+fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
@@ -348,7 +358,17 @@ for iruns=1:n_runs
        clear animal_session_indexes
        clear random_session
        animal_session_indexes=find(animal_id==animal_subset(iAn));
-       random_session=randperm(numel(animal_session_indexes));
+       % added weight probability
+       clear weights
+       clear random_session
+       weights=(1/length(animal_session_indexes))*(ones(1,numel(animal_session_indexes)));
+
+       numSamples = 1; % number of session selected
+       random_session = randsample(numel(animal_session_indexes), numSamples, true, weights);
+
+       %random_session=randperm(numel(animal_session_indexes)); % this was
+       %before change 202-08-2023
+
        chosen_session=animal_session_indexes(random_session(1));
        
        for iistim=1:n_pairs
@@ -392,6 +412,7 @@ for iruns=1:n_runs
                 temporaldirrawdatadistribution=ddata_temporal_still;
                 %x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
                 %x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
+                
                 tmp_x_nasal=datasample(nasaldirrawdatadistribution,ndrawnpoints,'replace',true);
                 tmp_x_temporal=datasample(temporaldirrawdatadistribution,ndrawnpoints,'replace',true);
                 
@@ -407,12 +428,17 @@ for iruns=1:n_runs
     tmpy = [tmpy,x_temporal2];
        
     end
-    %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
-    [~, pval_bootstrap_ttest2(iruns)]=ttest2(tmpx(:),tmpy(:),'Tail','right');
     
-    [pval_bootstrap, ~, stats_bootstrap] = signrank(tmpx(:),tmpy(:),'Tail','right');
+    [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+    
+    [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
     pval_bootstrap_signrank(iruns)=pval_bootstrap;
+    
+    [pval_bootstrap_ranksum(iruns), ~, stats_bootstrap_ranksum] = ranksum(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+
+    [~, pval_bootstrap_kstest2(iruns), stats_bootstrap_kstest2]=kstest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','larger');
+
     
 end
 
@@ -420,7 +446,7 @@ end
 p_value_ttest2 = sum(pval_bootstrap_ttest2 <= p_original_ttest2) / n_runs;
 p_value_stats_signrank = sum(stats_bootstraps_signrank <= stats_original_signrank) / n_runs;
 p_value_signrank = sum(pval_bootstrap_signrank <= p_original_signrank) / n_runs;
-
+[p_value_signrank, p_value_ttest2, p_value_stats_signrank]
 %p_value = sum(pval_bootstrap_signrank <= pval_signrank) / n_runs;
  
 %% PLOT HEAT DENSITY MAP
@@ -446,7 +472,7 @@ plot([0 150],[0,150],'w-')
 %title(sprintf('Resampled %d times, each sample %d trials',nresampling,ndrawnpoints))
 ylabel('dF Nasal directions (%)')
 xlabel('dF Temporal directions (%)')
-title('Mixed Trials')
+title('Awake Trials')
 caxis([0 0.0025])
 
 set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickdir','out',...
