@@ -21,15 +21,11 @@ sessions_id_list=pupil_data.sessions_id
 
 data_selected_in=new_pupil_data.raw_relative_diam_delta;
 %% select values for iterations
-nAnimal_sel=8
+nAnimal_sel=6
 nruns = 1000
-numSelections=6
+numSelections=4 % number trials
 numSamples = 1; % number of session selected
-
 nconditions=12; % number of stimulus
-
-alpha = 0.05;
-alpha_Bonferroni = alpha / nruns;
     
 %permuted_pupil_data_cell=cell(nAnimal_sel, nruns);
 permuted_pupil_data_cell={};
@@ -44,7 +40,7 @@ for iruns=1:nruns;
     
     % step2: get one session per animal and randomly selected session if
     % there are multiple sessions
-    tmp=[]
+    tmp=[];
     tmp_per_animal=[];
     
     for iAn=1:length(permuted_animal_id);
@@ -63,13 +59,16 @@ for iruns=1:nruns;
     
        random_session = randsample(numel(animal_session_indexes), numSamples, true, weights);
 
-       selected_session=animal_session_indexes(random_session(1));
+       % select animal
        selected_animal=permuted_animal_id(iAn);
+       
+       %selected_session=animal_session_indexes(random_session(1));
+
        selected_trials=intersect(find(data_selected_in(:,2)==random_session(1)), find(data_selected_in(:,1)==selected_animal));
        
        weights_trial=(1/length(selected_trials))*(ones(1,numel(selected_trials)));
        selected_indexes = randsample(length(selected_trials),numSelections, true, weights_trial);
-         
+       clear permuted_selected_trials  
        permuted_selected_trials=selected_trials(selected_indexes);
        % create new cell with randomly chosen data
        permuted_pupil_data_cell{j}=data_selected_in(permuted_selected_trials,:);
@@ -94,12 +93,30 @@ for i = 1:length(points)
         end
     end
 end
+
+for iruns=1:nruns
+    clear data_in
+    permuted_pupil_data_run_average_allmice{iruns}=nanmean(permuted_pupil_data_run{iruns}(:,4:end));
+    
+end
+%%
+
+points = 1:12;
+pairs_both_sides = [];
+for i = 1:length(points)
+    for j = 1:length(points)
+        if i ~= j
+            pairs_both_sides = [pairs_both_sides; points(i), points(j)];
+        end
+    end
+end
+
 %% calculate statistics for each iteration
 
 for iruns=1:nruns
     clear data_in
-    %data_in=permuted_pupil_data_run{iruns}; % all trials
-    data_in=permuted_pupil_data_run_mean{iruns};
+    data_in=permuted_pupil_data_run{iruns}; % all trials
+    %data_in=permuted_pupil_data_run_mean{iruns};
     add_val=3;  
     %  create array with conditions
     clear data_all
@@ -107,7 +124,198 @@ for iruns=1:nruns
         data_all{icond}=data_in(:,icond+add_val);
     end
 
-    % 
+    pval_sig_now=nan(nconditions);
+    mat_sig_now=nan(nconditions);    
+    for ipairs=1:length(pairs_both_sides)
+        
+        pair_now=pairs_both_sides(ipairs,:);
+        stim01=pair_now(1);
+        stim02=pair_now(2);
+    
+        data1=data_all{stim01};
+        data2=data_all{stim02};
+        
+        % ks test
+        [~,ks2pval(ipairs),ks2stat(ipairs)]=kstest2(rmmissing(data1(:)),rmmissing(data2(:)),'tail','larger');
+        % signrank test
+        clear signrankstat_tmp
+        [signrankpval(ipairs),~,signrankstat_tmp]=signrank(data1(:),data2(:),'Tail','right');
+        %signrankstat(ipair)=signrankstat_tmp.zval;
+        
+        % ttest2 test 
+        clear ttest2stat_tmp
+        [~,ttest2pval(ipairs),~, ttest2stat_tmp]=ttest2(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+        
+        ttest2stat(ipairs)=ttest2stat_tmp.tstat;
+        
+        clear ranksumstat_tmp
+        [ranksumpval(ipairs),~,ranksumstat_tmp]=ranksum(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+
+        pval_sig_now(stim01, stim02)=ttest2pval(ipairs);
+        
+        if sum(pval_sig_now(stim01, stim02)>=0.05)==1
+            mat_sig_now(stim01, stim02)=2;
+        elseif sum(pval_sig_now(stim01, stim02)<0.05 & pval_sig_now(stim01, stim02)>=0.01)==1
+            mat_sig_now(stim01, stim02)=4;
+        elseif sum(pval_sig_now(stim01, stim02)<0.01 & pval_sig_now(stim01, stim02)>=0.001)==1
+            mat_sig_now(stim01, stim02)=6;            
+        elseif sum(pval_sig_now(stim01, stim02)<0.001 & pval_sig_now(stim01, stim02)>=0.0001)==1
+            mat_sig_now(stim01, stim02)=8;
+        elseif sum(pval_sig_now(stim01, stim02)<0.0001)==1
+            mat_sig_now(stim01, stim02)=10;          
+        end
+    
+    end
+ 
+    ngroup=nconditions;
+    A=magic(12);
+    [row, col] = meshgrid(1:12, 1:12);
+    diagonal_elements_subscript = A(row == col);
+
+    mat_sig_now(diagonal_elements_subscript)=1;
+    mat_sig=mat_sig_now;
+    mat_sig_individual{iruns}=mat_sig;
+    pval_sig_individual{iruns}=pval_sig_now;
+%     figure(1)
+%     clf
+%     [XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+%     hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+%     set(hp,'edgecolor','w');
+%     colorspace=brewermap(10,'Blues');
+%     colormap(colorspace)
+%     set(gca,'clim',[0 10]);
+%     axis square ij
+%     box on
+%     set(gca,'xtick',[],'ytick',[]);
+% 
+%     % Add custom legend using text objects
+%     hold on;
+%     text_legend_x = ngroup + 1.5; % X position for the legend text
+%     text_legend_y = [1:4]; % Y positions for each legend entry
+% 
+%     text(text_legend_x, text_legend_y(1), 'ns', 'Color', colorspace(2, :), 'FontSize', 10, 'FontWeight', 'bold');
+%     text(text_legend_x, text_legend_y(2), '< 0.05', 'Color', colorspace(4, :), 'FontSize', 10, 'FontWeight', 'bold');
+%     text(text_legend_x, text_legend_y(3), '< 0.01', 'Color', colorspace(6, :), 'FontSize', 10, 'FontWeight', 'bold');
+%     text(text_legend_x, text_legend_y(4), '< 0.001', 'Color', colorspace(8, :), 'FontSize', 10, 'FontWeight', 'bold');
+% 
+%     hold off;
+%     %
+%     currentunits = get(gca,'Units');
+%     set(gca, 'Units', 'Points');
+%     axpos = get(gca,'Position');
+%     set(gca, 'Units', currentunits);
+% 
+%     list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+% 
+%     set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+%     set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+%     xtickangle(90);
+
+    
+end
+
+%%
+pval_mean_array=nan(nconditions);    
+for ipairs=1:length(pairs_both_sides)
+
+    pair_now=pairs_both_sides(ipairs,:);
+    stim01=pair_now(1);
+    stim02=pair_now(2);
+    pval_all=[];
+    for iruns=1:nruns
+        clear pval_tmp;
+        pval_tmp=pval_sig_individual{iruns}(stim01,stim02);
+        pval_all=[pval_all, pval_tmp];
+    end
+    
+    pval_condition{ipairs}=pval_all;
+    pval_condition_mean{ipairs}=nanmean(pval_all);
+    pval_condition_median{ipairs}=nanmedian(pval_all);
+    pval_median_array(stim01,stim02)=nanmedian(pval_all);
+    pval_mean_array(stim01,stim02)=nanmean(pval_all);
+end
+%%
+    figure(1)
+    clf
+    [XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+    hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+    set(hp,'edgecolor','w');
+    colorspace=brewermap(10,'Blues');
+    colormap(colorspace)
+    set(gca,'clim',[0 10]);
+    axis square ij
+    box on
+    set(gca,'xtick',[],'ytick',[]);
+
+    % Add custom legend using text objects
+    hold on;
+    text_legend_x = ngroup + 1.5; % X position for the legend text
+    text_legend_y = [1:4]; % Y positions for each legend entry
+
+    text(text_legend_x, text_legend_y(1), 'ns', 'Color', colorspace(2, :), 'FontSize', 10, 'FontWeight', 'bold');
+    text(text_legend_x, text_legend_y(2), '< 0.05', 'Color', colorspace(4, :), 'FontSize', 10, 'FontWeight', 'bold');
+    text(text_legend_x, text_legend_y(3), '< 0.01', 'Color', colorspace(6, :), 'FontSize', 10, 'FontWeight', 'bold');
+    text(text_legend_x, text_legend_y(4), '< 0.001', 'Color', colorspace(8, :), 'FontSize', 10, 'FontWeight', 'bold');
+
+    hold off;
+    %
+    currentunits = get(gca,'Units');
+    set(gca, 'Units', 'Points');
+    axpos = get(gca,'Position');
+    set(gca, 'Units', currentunits);
+
+    list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+
+    set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+    set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+    xtickangle(90);
+
+%%
+ngroup=nconditions;
+A=magic(12);
+[row, col] = meshgrid(1:12, 1:12);
+diagonal_elements_subscript = A(row == col);
+
+
+mat_sig_now(diagonal_elements_subscript)=1;
+mat_sig=mat_sig_now;
+
+figure(1)
+clf
+[XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+set(hp,'edgecolor','w');
+colorspace=brewermap(10,'Blues');
+colormap(colorspace)
+set(gca,'clim',[0 10]);
+axis square ij
+box on
+set(gca,'xtick',[],'ytick',[]);
+
+% Add custom legend using text objects
+hold on;
+text_legend_x = ngroup + 1.5; % X position for the legend text
+text_legend_y = [1:4]; % Y positions for each legend entry
+
+text(text_legend_x, text_legend_y(1), 'ns', 'Color', colorspace(2, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(2), '< 0.05', 'Color', colorspace(4, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(3), '< 0.01', 'Color', colorspace(6, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(4), '< 0.001', 'Color', colorspace(8, :), 'FontSize', 10, 'FontWeight', 'bold');
+
+hold off;
+%
+currentunits = get(gca,'Units');
+set(gca, 'Units', 'Points');
+axpos = get(gca,'Position');
+set(gca, 'Units', currentunits);
+
+list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+
+set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+xtickangle(90);
+
+%%
     ngroup=numel(data_all);
     %pairs=nchoosek(1:ngroup,2);
     pairs=pairs_both_sides;
@@ -193,7 +401,7 @@ ks2pval_bootstrap(ipairs)=prctile(ks2pval_array(ipairs,:),prctile_tresh);
 
 end
 %%
-statistical_test_chosen=ranksumpval_bootstrap;
+statistical_test_chosen=ks2pval_bootstrap;
 % create array for plotting results
 
 mat_sig_now=zeros(ngroup);
@@ -274,5 +482,3 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Fig
 %print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_kstestpvals.pdf']);
 %print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_signrankpvals.pdf']);
 %print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_ttest2pvals.pdf']);
-
-%%

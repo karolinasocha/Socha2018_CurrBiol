@@ -283,11 +283,3 @@ print(gcf,'-dpdf',[filepathanalysis, 'newFigure1D_heatmap_sessions_animal_pval.p
 % 
 % %print(gcf,'-dpdf',[filepathanalysis, 'heatmap_raw_diam_relative_delta_pupil_sessions.pdf']);
 % 
-% 
-% 
-
-
-
-
-
-
