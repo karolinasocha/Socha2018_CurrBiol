@@ -48,10 +48,10 @@ for iAn=1:length(animal_id_list)
     [~, pval_ttest2_animal(iAn)]=ttest2(100*rmmissing(data_nasal(:)),100*rmmissing(data_temporal(:)),'Tail','right');
 
 end
-
-number_increased_diam_animals=length(find(pval<0.05));
+pval=pval_ranksum_animal
+number_increased_diam_animals=length(find(pval<0.01));
 number_increased_diam_animals
-[pval_signrank_animal; pval_ttest2_animal; pval_ranksum_animal; pval_kstest_animal];
+[pval_signrank_animal; pval_ttest2_animal; pval_ranksum_animal; pval_kstest_animal]
 
 %%
 %% scatter plot
@@ -99,6 +99,7 @@ number_sessions=size(new_pupil_data.trials_raw_diam_diff_relative_stimulation,2)
 
 for iSess=1:number_sessions
     
+    % this sorts session depending on animal id
     data_sessions_in_sorted{iSess}=new_pupil_data.trials_raw_diam_diff_relative_stimulation{indx(iSess)};
 
     clear appendedArray;
@@ -140,8 +141,6 @@ for iSess=1:number_sessions
     end
 end
 
-
-%%
 %% PLOT HEAT MAP averaged 40 sessions
 %tt=cell2mat(new_pupil_data.av_median_diam_stims_reordered_offset');
 [val, idx]=sort(new_pupil_data.animal_id); % sort animals
@@ -167,7 +166,7 @@ fig(2) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',
 clf
 yyaxis right
 % axes(ax_heatmap_allmice_plot)
-imagesc(100*tt(idx,:));
+imagesc(100*tt); % removed idx from here because this is already sorted by animal id
 cmap=colormap(redblue);
 set(gca,'CLim',[-20 20]);
 

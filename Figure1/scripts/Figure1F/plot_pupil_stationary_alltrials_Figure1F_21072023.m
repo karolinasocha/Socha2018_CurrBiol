@@ -79,6 +79,8 @@ order_temporal=[5,6,7,8,9,10];
 %% get pupil size per session
 pupil_loc_mean=NaN(length(pupil_data_in), 12);
 pupil_still_mean=NaN(length(pupil_data_in), 12);
+pval_session_loc=nan(length(pupil_data_in),1);
+pval_session_still=nan(length(pupil_data_in),1);
 
 for iSess=1:length(pupil_data_in)
     clear pupil_data_tmp
@@ -118,7 +120,9 @@ for iSess=1:length(pupil_data_in)
     data_temporal_test=data_temporal(validIndex);
     
     %[pval_session(iSess), h0_session(iSess), stats_session{iSess}]=signrank(data_nasal_test(:), data_temporal_test(:),'Tail','right');
-    [h0_session_still(iSess),pval_session_still(iSess),]=ttest2(data_nasal_test(:), data_temporal_test(:),'Tail','right');
+    %[h0_session_still(iSess),pval_session_still(iSess),]=ttest2(data_nasal_test(:), data_temporal_test(:),'Tail','right');
+     [pval_session_still(iSess), ~, ~]=ranksum(rmmissing(data_nasal_test(:)),rmmissing(data_temporal_test(:)),'Tail','right');
+
     
     clear validIndex
     data_nasal_loc=appendedArray_loc{iSess}(:,order_nasal);
@@ -129,9 +133,11 @@ for iSess=1:length(pupil_data_in)
     validIndex = ~isnan(data_temporal_loc);
     data_temporal_test_loc=data_temporal_loc(validIndex);
     
-    [h0_session_loc(iSess),pval_session_loc(iSess),]=ttest2(data_nasal_test_loc(:), data_temporal_test_loc(:),'Tail','right');
+    %[h0_session_loc(iSess),pval_session_loc(iSess),]=ttest2(data_nasal_test_loc(:), data_temporal_test_loc(:),'Tail','right');
     %[pval_session_loc(iSess), h0_session_loc(iSess), stats_session_loc{iSess}]=signrank(data_nasal_test_loc(:), data_temporal_test_loc(:),'Tail','right');
-    
+    try
+    [pval_session_loc(iSess), ~, ~]=ranksum(rmmissing(data_nasal_test_loc(:)),rmmissing(data_temporal_test_loc(:)),'Tail','right');
+    end
 end
 
 %%
@@ -183,7 +189,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
 
 %%
 selected_loc_animals=[2,4,11,10]; 
@@ -219,7 +225,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
 
 %%
 order_nasal=[11,12,1,2,3,4];
@@ -228,13 +234,17 @@ order_temporal=[5,6,7,8,9,10];
 data_locomotion=average_locomotion(selected_loc_animals,:);
 data_locomotion_nasal=data_locomotion(:,order_nasal);
 data_locomotion_temporal=data_locomotion(:,order_temporal);
-[pval_loc, h0_loc, stats_loc]=signrank(data_locomotion_nasal(:), data_locomotion_temporal(:),'Tail','right');
-% pval_loc= 0.1236
+%[pval_loc, h0_loc, stats_loc]=signrank(data_locomotion_nasal(:), data_locomotion_temporal(:),'Tail','right');
+[pval_loc, h0_loc, stats_loc]=ranksum(rmmissing(data_locomotion_nasal(:)),rmmissing(data_locomotion_temporal(:)),'Tail','right');
+% pval_loc= 0.0820 with ranksum
+% pval_loc= 0.1236 with signrank
 data_stationary=average_stiationary;
 data_stationary_nasal=data_stationary(:,order_nasal);
 data_stationary_temporal=data_stationary(:,order_temporal);
-[pval_still, h0_still, stats_still]=signrank(data_stationary_nasal(:), data_stationary_temporal(:),'Tail','right');
-% pval_still= 2.6618e-07
+%[pval_still, h0_still, stats_still]=signrank(data_stationary_nasal(:), data_stationary_temporal(:),'Tail','right');
+[pval_still, h0_still, stats_still]=ranksum(rmmissing(data_stationary_nasal(:)),rmmissing(data_stationary_temporal(:)),'Tail','right');
+% pval_still= 2.1526e-09 with ranksum
+% pval_still= 2.6618e-07 with signrank
 
 %%
 animal_id_list=unique(new_pupil_data.animal_id);
@@ -258,7 +268,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'significant_session_per_animal_stationary.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'significant_session_per_animal_stationary.pdf']);
 %%
 %% average sessions from the same animal
 
@@ -297,7 +307,8 @@ for iAn=1:length(animal_id_list)
     data_temporal=appendedArray(:,order_temporal);
     
     %[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
-    [pval(iAn), h0(iAn), stats{iAn}]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    %[pval(iAn), h0(iAn), stats{iAn}]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    [pval(iAn), h0(iAn), stats{iAn}]=ranksum(rmmissing(data_nasal(:)),rmmissing(data_temporal(:)),'Tail','right');
     pupil_animals_cell{iAn}=squeeze(nanmean(appendedArray,1))
     
 end
@@ -359,7 +370,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials.pdf']);
 %% heatmap
 
 %% across 13 mice
@@ -440,7 +451,8 @@ box off
     data_temporal=eye_trace_alltrials(:,order_temporal);
     
     %[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
-    [pval_all, h0_all, stats_all]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    %[pval_all, h0_all, stats_all]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+    [pval_all, h0_all, stats_all]=ranksum(rmmissing(data_nasal(:)), rmmissing(data_temporal(:)),'Tail','right');
     number_increased_diam_animals=length(find(pval_still<0.05));
     number_increased_diam_animals
     
