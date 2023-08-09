@@ -49,7 +49,7 @@ for iAn=1:length(animal_id_list)
 
 end
 pval=pval_ranksum_animal
-number_increased_diam_animals=length(find(pval<0.05));
+number_increased_diam_animals=length(find(pval<0.01));
 number_increased_diam_animals
 [pval_signrank_animal; pval_ttest2_animal; pval_ranksum_animal; pval_kstest_animal]
 
@@ -99,6 +99,7 @@ number_sessions=size(new_pupil_data.trials_raw_diam_diff_relative_stimulation,2)
 
 for iSess=1:number_sessions
     
+    % this sorts session depending on animal id
     data_sessions_in_sorted{iSess}=new_pupil_data.trials_raw_diam_diff_relative_stimulation{indx(iSess)};
 
     clear appendedArray;
@@ -139,7 +140,129 @@ for iSess=1:number_sessions
     pval_sess_sign{iSess}='*'
     end
 end
+%%
+fig(2) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+clf
+yyaxis left
+% axes(ax_heatmap_allmice_plot)
+imagesc(100*tt(1:5,:)); % removed idx from here because this is already sorted by animal id
+cmap=colormap(redblue);
+set(gca,'CLim',[-20 20]);
 
+%%
+fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+clf
+yyaxis left
+% axes(ax_heatmap_allmice_plot)
+imagesc(100*tt); % removed idx from here because this is already sorted by animal id
+cmap=colormap(redblue);
+set(gca,'CLim',[-20 20]);
+
+hold on
+for ii=1:length(y_draw_line)
+plot(x_draw_line,[y_draw_line(ii), y_draw_line(ii)]+0.5,  '-k', 'LineWidth', 1);
+hold on
+end
+
+hold on
+
+% Add labels on the right side of the y-axis
+y_tick_vals = 1.0:1:40.5; % Y-axis tick positions
+y_tick_labels = pval_sess_sign; % Initialize an empty cell array for y-axis tick labels
+
+set(gca, 'YTick', y_tick_vals, 'YTickLabel', y_tick_labels);
+axis tight
+axis square
+ylabel('#Sessions per animal', 'FontSize',16);
+xlabel('Directions (deg)','FontSize',16);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05];
+caxis([-20 20]);
+
+box off
+
+set(cb,'tickdir','out','fontsize',8,'ticklength',get(cb,'ticklength')*4);
+box off
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\'];
+%%
+fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+clf
+yyaxis left
+% axes(ax_heatmap_allmice_plot)
+imagesc(100*tt); % removed idx from here because this is already sorted by animal id
+cmap=colormap(redblue);
+set(gca,'CLim',[-20 20]);
+
+ylabels_animal_id={'#1','#2','#3','#4','#5','#6','#7','#8','#9','#10','#11','#12','#13'};
+yticks_position=y_draw_line+0.5;
+hold on
+
+for ii=1:length(y_draw_line)
+plot(x_draw_line,[y_draw_line(ii), y_draw_line(ii)]+0.5,  '-k', 'LineWidth', 1);
+hold on
+end
+
+hold on
+set(gca,'ytick',yticks_position,'yticklabels',ylabels_animal_id);
+axis tight
+axis square
+ylabel('#Sessions per animal', 'FontSize',16);
+xlabel('Directions (deg)','FontSize',16);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05];
+caxis([-20 20]);
+
+box off
+
+set(cb,'tickdir','out','fontsize',8,'ticklength',get(cb,'ticklength')*4);
+box off
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\'];
+
+%%
+ylabels_animal_id={'#1','#2','#3','#4','#5','#6','#7','#8','#9','#10','#11','#12','#13'};
+yticks_position=y_draw_line+0.5;
+hold on
+
+yyaxis right
+hold on
+for ii=1:length(y_draw_line)
+plot(x_draw_line,[y_draw_line(ii), y_draw_line(ii)]+0.5,  '-k', 'LineWidth', 1);
+hold on
+end
+
+hold on
+set(gca,'ytick',yticks_position,'yticklabels',ylabels_animal_id);
+set(gca, 'Ydir', 'reverse')
+
+axis tight
+axis square
+ylabel('#Sessions per animal', 'FontSize',16);
+xlabel('Directions (deg)','FontSize',16);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330]);
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+
+cb=colorbar;
+cb.Position = [.1,.082,.015,.05];
+caxis([-20 20]);
+
+box off
+
+set(cb,'tickdir','out','fontsize',8,'ticklength',get(cb,'ticklength')*4);
+box off
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\'];
+print(gcf,'-dpdf',[filepathanalysis, 'newFigure1D_heatmap_sessions_animal_pval.pdf']);
 
 %% PLOT HEAT MAP averaged 40 sessions
 %tt=cell2mat(new_pupil_data.av_median_diam_stims_reordered_offset');
@@ -166,7 +289,7 @@ fig(2) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',
 clf
 yyaxis right
 % axes(ax_heatmap_allmice_plot)
-imagesc(100*tt(idx,:));
+imagesc(100*tt); % removed idx from here because this is already sorted by animal id
 cmap=colormap(redblue);
 set(gca,'CLim',[-20 20]);
 
