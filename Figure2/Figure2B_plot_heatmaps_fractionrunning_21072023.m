@@ -70,6 +70,8 @@ frac_running{iAn}(ntrials,iStim) = sum(X_velo_tmp(:)>1,1)/size(X_velo_tmp(:),1);
 end
 
 %%
+order_nasal=[11,12,1,2,3,4];
+order_temporal=[5,6,7,8,9,10];
 j=0;
 for iAn=1:40    
     ntrial=size(frac_running{iAn},1);
@@ -116,7 +118,7 @@ for nround=1:8
     data_temporal=tmp_pupil_mean(:,order_temporal);
     [pval_trials(nround), hval_trials(nround)]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
     [hval_trials_tt(nround), pval_trials_tt(nround)]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
-    
+    [pval_trials_ranksum(nround),~,~]=ranksum(data_nasal(:), data_temporal(:),'Tail','right');
 end
 %%
 
@@ -162,7 +164,7 @@ title('Av Pupil')
 
    set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
    filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure2\']; 
-   print(gcf,'-dpdf',[filepathanalysis, 'Figure2B_pupil_diff_fraction_running.pdf']);
+   %print(gcf,'-dpdf',[filepathanalysis, 'Figure2B_pupil_diff_fraction_running.pdf']);
 
 %% average across same animals
 
@@ -186,6 +188,7 @@ for nround=1:8
     data_temporal=tmp_pupil_mean(:,order_temporal);
     [pval(nround), hval(nround)]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
     [hval_tt(nround), pval_tt(nround)]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+    [pval_ranksum(nround),~]=ranksum(data_nasal(:), data_temporal(:),'Tail','right');
     mean_pupil(nround,:)=nanmean(pupil_mean_round{nround},1);
     nanstd_mean_pupil(nround,:)=nanstd(tmp_pupil_mean./sqrt(length(animal_names)));
     nanimals(nround)=length(animal_names)

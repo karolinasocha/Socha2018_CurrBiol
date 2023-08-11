@@ -304,7 +304,7 @@ fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
 n_runs=1000
-n_sampled_animals=5
+n_sampled_animals=6
 n_sampled_trials=3
 n_pairs = 6;
 ndrawnpoints=3
@@ -431,11 +431,16 @@ for iruns=1:n_runs
     
 end
 %%
-prctile_tresh=97.5;
-fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
-fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
-fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
-fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+prctile_tresh=50;
+fprintf('kstest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+% fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+% fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+% fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
 
 % kstest2 bootstrapping 97.5 prctile p-value:  8.67e-01
 % ttest2 bootstrapping 97.5 prctile p-value:  1.00e+00

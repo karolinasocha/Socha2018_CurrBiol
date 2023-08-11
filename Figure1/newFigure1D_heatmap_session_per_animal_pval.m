@@ -193,6 +193,7 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Fig
 %% indicate number of animal
 fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
     'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
+
 clf
 yyaxis left
 % axes(ax_heatmap_allmice_plot)

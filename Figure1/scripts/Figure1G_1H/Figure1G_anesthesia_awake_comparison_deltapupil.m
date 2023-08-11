@@ -131,7 +131,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1G_3mice_average_anesthesia_awake_relative_delta_pupil_SEM_animals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1G_3mice_average_anesthesia_awake_relative_delta_pupil_SEM_animals.pdf']);
 %
 %% PVAL - TEST
 
@@ -140,10 +140,14 @@ order_temporal=[5,6,7,8,9,10];
 
 data_nasal_awake=mean_pupil_delta_awake(:,order_nasal);
 data_temporal_awake=mean_pupil_delta_awake(:,order_temporal);
-[pval_awake, h0_awake, stats_awake]=signrank(data_nasal_awake(:), data_temporal_awake(:),'Tail','right');
+%[pval_awake, h0_awake, stats_awake]=signrank(data_nasal_awake(:), data_temporal_awake(:),'Tail','right');
+[pval_awake, h0_awake, stats_awake]=ranksum(data_nasal_awake(:), data_temporal_awake(:),'Tail','right');
+
 pval_awake % pval=0.0118
 
 data_nasal_anesthesia=mean_pupil_delta_anesthesia(:,order_nasal);
 data_temporal_anesthesia=mean_pupil_delta_anesthesia(:,order_temporal);
 [pval_anesthesia, h0_anesthesia, stats_anesthesia]=signrank(data_nasal_anesthesia(:), data_temporal_anesthesia(:),'Tail','right');
+[pval_anesthesia, h0_anesthesia, stats_anesthesia]=ranksum(data_nasal_anesthesia(:), data_temporal_anesthesia(:),'Tail','right');
+
 pval_anesthesia % pval=0.2040

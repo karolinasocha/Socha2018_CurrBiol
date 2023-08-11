@@ -249,7 +249,7 @@ data_stationary_temporal=data_stationary(:,order_temporal);
 %%
 animal_id_list=unique(new_pupil_data.animal_id);
 y=animal_id_list
-significant_session_index=find(pval_session<0.05);
+% significant_session_index=find(pval_session<0.05);
 
 [x1, y1] =histc(new_pupil_data.animal_id,animal_id_list);
 [x2, y2] =histc(new_pupil_data.animal_id(significant_session_index),animal_id_list);

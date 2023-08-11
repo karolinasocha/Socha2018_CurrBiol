@@ -81,7 +81,7 @@ set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposi
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\SuppFigure1\'];
 print(gcf,'-dpdf',[filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged_SEM.pdf'])
 
-%saveas(gcf, [filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged_SEM.pdf']);
+saveas(gcf, [filepathanalysis, 'SupplFigure1C_deltavelociy_13mice_averaged_SEM.pdf']);
 %% SAME PLOT BUT WITH CI
 
 % Define the confidence level (1 - alpha)

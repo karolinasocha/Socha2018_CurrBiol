@@ -430,7 +430,7 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Fig
 %print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_calcium_response_population_fractionrunning.svg']);
 
 %print('-painters','-depsc','Figure3F_plot_avdFF_calcium_response_population_fractionrunning')
-print('-painters','-dpdf','Figure3F_plot_avdFF_calcium_response_population_fractionrunning')
+%print('-painters','-dpdf','Figure3F_plot_avdFF_calcium_response_population_fractionrunning')
 
 %% plot average over 50 trials after sorting regarding to fraction of running
 colors_line=parula(12)
@@ -513,7 +513,7 @@ plot([xstimulus_start;xstimulus_end],ystimulus_limit_top,'k','linewidth',3);
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_velocity_calcium_response_population_awake_allexperiments_fractionrunning_v2_withstimulus.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure3F_plot_avdFF_velocity_calcium_response_population_awake_allexperiments_fractionrunning_v2_withstimulus.pdf']);
 
 %%
 
@@ -557,7 +557,7 @@ for iStim =1:6
     for_test_nasal_data=mean_session_array_perStim(order_nasal,:);
     for_test_temporal_data=mean_session_array_perStim(order_temporal,:);
     [pval(iStim), h0(iStim)]=signrank(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
-
+    [pval_ranksum(iStim), ~]=ranksum(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
 
     number_animals(iStim)=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
     meanData=nanmean(mean_session_array',1);

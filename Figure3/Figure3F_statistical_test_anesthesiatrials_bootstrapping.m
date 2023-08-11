@@ -317,12 +317,16 @@ fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 % signrank original p-value:  2.42e-01
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
+% n_runs=1000
+% n_sampled_animals=5
+% n_sampled_trials=3
+% n_pairs = 6;
+% ndrawnpoints=3
 n_runs=1000
-n_sampled_animals=5
-n_sampled_trials=3
+n_sampled_animals=4
+n_sampled_trials=6
 n_pairs = 6;
-ndrawnpoints=3
-
+ndrawnpoints=6
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
@@ -453,11 +457,16 @@ for iruns=1:n_runs
 end
 
 %% PVAL TO BE REPORTED IN THE PAPER WITH BONFERRONI CORRECTION
-prctile_tresh=97.5;
+prctile_tresh=50;
 fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
 fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
 fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
 fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 50 prctile p-value:  3.19e-04
+% ttest2 bootstrapping 50 prctile p-value:  9.45e-02
+% ranksum bootstrapping 50 prctile p-value:  8.25e-03
+% signrank bootstrapping 50 prctile p-value:  3.90e-03
 
 % kstest2 bootstrapping 97.5 prctile p-value:  7.26e-01
 % ttest2 bootstrapping 97.5 prctile p-value:  9.54e-01
@@ -505,4 +514,4 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_anesthesia_dF_bootstrapped.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_anesthesia_dF_bootstrapped.pdf']);

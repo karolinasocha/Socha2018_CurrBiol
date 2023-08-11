@@ -556,13 +556,13 @@ for iStim =1:6
     clear for_test_temporal_data
     for_test_nasal_data=mean_session_array_perStim(order_nasal,:);
     for_test_temporal_data=mean_session_array_perStim(order_temporal,:);
-    [pval(iStim), h0(is, stats]=signrank(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
+    [pval(iStim), h0(iStim)]=signrank(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
+    [pval_ranksum(iStim), ~]=ranksum(for_test_nasal_data(:), for_test_temporal_data(:),'Tail','right');
 
-
-    number_animals=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
+    number_animals(iStim)=length(unique(animal_id_trials_sorted(start_number(iStim):end_number(iStim))));
     meanData=nanmean(mean_session_array',1);
     %semData=nanstd(calcium_response_array_ord(:,start_number(iStim):end_number(iStim))',1)./sqrt(size(calcium_response_array_ord(:,start_number(iStim):end_number(iStim)),2));
-    semData=nanstd(mean_session_array',1)./sqrt(number_animals);
+    semData=nanstd(mean_session_array',1)./sqrt(number_animals(iStim));
    
     x = 1:size(meanData,2);
 
@@ -576,6 +576,21 @@ for iStim =1:6
     hold on
     plot([0 size(calcium_response_array_ord,1)],[50 50],'--k');
     axis off
+    
+    alpha = 0.05;
+    alpha_Bonferroni(iStim) = alpha / number_animals(iStim);
+
+    % Compare each p-value to the Bonferroni-corrected significance level
+
+    if pval(iStim) <= alpha_Bonferroni(iStim)
+        Bonferroni_correction(iStim)=1;
+        disp(['Iteration ', num2str(iStim), ': Reject null hypothesis']);
+    else
+        disp(['Iteration ', num2str(iStim), ': Fail to reject null hypothesis']);
+        Bonferroni_correction(iStim)=0;
+    end
+
 end
 
 
+number_animals
