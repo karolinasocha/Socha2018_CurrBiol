@@ -1,0 +1,442 @@
+% this script is used in Figure 1E; 
+% modified 06 August 2023 by K.Socha
+% select same number of animals
+% select same number of sessions
+
+clear all
+% zscored values takes average zscored per session
+%load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\pupil_data.mat','pupil_data')
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\new_pupil_data.mat')
+pupil_data= new_pupil_data
+
+session_list=unique(pupil_data.sessions_id)
+animals_id=unique(pupil_data.animal_id)
+
+animal_id_list=pupil_data.animal_id
+sessions_id_list=pupil_data.sessions_id
+
+%data_selected_in=new_pupil_data.median_norm_diam_stims_offset;
+
+%data_selected_in=new_pupil_data.raw_diam_stims_offset
+
+data_selected_in=new_pupil_data.raw_relative_diam_delta;
+%% select values for iterations
+nAnimal_sel=8
+nruns = 1000
+numSelections=6
+numSamples = 1; % number of session selected
+
+nconditions=12; % number of stimulus
+
+alpha = 0.05;
+alpha_Bonferroni = alpha / nruns;
+    
+%permuted_pupil_data_cell=cell(nAnimal_sel, nruns);
+permuted_pupil_data_cell={};
+
+j=0;
+
+for iruns=1:nruns;
+    %step 1: select 7 animal's id randomly
+    clear permuted_in
+    permuted_in = animals_id(randperm(numel(animals_id)));
+    permuted_animal_id=permuted_in(1:nAnimal_sel);
+    
+    % step2: get one session per animal and randomly selected session if
+    % there are multiple sessions
+    tmp=[]
+    tmp_per_animal=[];
+    
+    for iAn=1:length(permuted_animal_id);
+        % find sessions related to animal id; some animals have only 1 session
+        j=j+1;
+        
+       clear chosen_session
+       clear animal_session_indexes
+       clear random_session
+       
+       animal_session_indexes=find(animal_id_list==permuted_animal_id(iAn));
+       % added weight probability
+       clear weights
+       clear random_session
+       weights=(1/length(animal_session_indexes))*(ones(1,numel(animal_session_indexes)));
+    
+       random_session = randsample(numel(animal_session_indexes), numSamples, true, weights);
+
+       selected_session=animal_session_indexes(random_session(1));
+       selected_animal=permuted_animal_id(iAn);
+       selected_trials=intersect(find(data_selected_in(:,2)==random_session(1)), find(data_selected_in(:,1)==selected_animal));
+       
+       weights_trial=(1/length(selected_trials))*(ones(1,numel(selected_trials)));
+       selected_indexes = randsample(length(selected_trials),numSelections, true, weights_trial);
+         
+       permuted_selected_trials=selected_trials(selected_indexes);
+       % create new cell with randomly chosen data
+       permuted_pupil_data_cell{j}=data_selected_in(permuted_selected_trials,:);
+       permuted_data_mean_per_animal=nanmean(data_selected_in(permuted_selected_trials,:));
+       tmp_per_animal=[tmp_per_animal; permuted_data_mean_per_animal];
+       %permuted_pupil_data_cell{iAn, iruns}=pupil_data.zscored_data(permuted_selected_trials,:);
+       tmp=[tmp; data_selected_in(permuted_selected_trials,:)];
+
+    end
+    
+    permuted_pupil_data_run_mean{iruns}=100*tmp_per_animal;
+    permuted_pupil_data_run{iruns}=100*tmp;
+    
+end
+%%
+for iruns=1:nruns
+    permuted_pupil_data_run_mean_mean{iruns}=nanmean(permuted_pupil_data_run_mean{iruns});
+end
+
+%%
+points = 1:12;
+pairs_both_sides = [];
+for i = 1:length(points)
+    for j = 1:length(points)
+        if i ~= j
+            pairs_both_sides = [pairs_both_sides; points(i), points(j)];
+        end
+    end
+end
+%%
+
+%% calculate statistics for each iteration
+
+data_in=cell2mat(permuted_pupil_data_run_mean_mean');
+add_val=3;  
+%  create array with conditions
+
+clear data_all
+for icond=1:nconditions
+    data_all{icond}=data_in(:,icond+add_val);
+end
+
+ngroup=numel(data_all);
+%pairs=nchoosek(1:ngroup,2);
+pairs=pairs_both_sides;
+
+ks2stat=nan(length(pairs),1);
+ttest2stat=nan(length(pairs),1);
+signrankstat=nan(length(pairs),1);
+
+ks2pval=nan(length(pairs),1);
+ttest2pval=nan(length(pairs),1);
+signrankpval=nan(length(pairs),1);
+
+ttest2CI=nan(length(pairs),1);
+
+for ipair=1:size(pairs,1)
+    clear data1
+    clear data2
+    pair_now=pairs(ipair,:);    
+    data1=data_all{pair_now(1)};
+    data2=data_all{pair_now(2)};
+    data1_mean(pair_now(1))=nanmean(data1);
+    data2_mean(pair_now(2))=nanmean(data2);
+
+    %run KS2 test
+    [~,ks2pval(ipair),ks2stat(ipair)]=kstest2(rmmissing(data1(:)),rmmissing(data2(:)),'tail','larger');
+
+    % run signrank test
+    clear signrankstat_tmp
+    [signrankpval(ipair),~,signrankstat_tmp]=signrank(data1(:),data2(:),'Tail','right');
+    %signrankstat(ipair)=signrankstat_tmp.zval;
+
+    % run ttest2 test 
+    clear ttest2stat_tmp
+    [~,ttest2pval(ipair),~, ttest2stat_tmp]=ttest2(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+
+    ttest2stat(ipair)=ttest2stat_tmp.tstat;
+
+    clear ranksumstat_tmp
+    [ranksumpval(ipair),~,ranksumstat_tmp]=ranksum(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+
+
+end
+
+ranksumpval_bootstrap=ranksumpval;
+
+
+%%
+statistical_test_chosen=ranksumpval;
+% create array for plotting results
+
+mat_sig_now=zeros(ngroup);
+pval_sig_now=zeros(ngroup);
+
+for ipairs=1:size(pairs,1)
+    
+    if sum(statistical_test_chosen(ipairs)>=0.05)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=2
+    elseif sum(statistical_test_chosen(ipairs)<0.05 & statistical_test_chosen(ipairs)>=0.01)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=4;
+    elseif sum(statistical_test_chosen(ipairs)<0.01 & statistical_test_chosen(ipairs)>=0.001)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=6;
+    elseif sum(statistical_test_chosen(ipairs)<0.001)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=8;
+    end
+
+end
+
+%mat_sig_now(mat_sig_now==2)=1;
+%mat_sig_now=squareform(squareform(pval_sig_now'));
+A=magic(12);
+[row, col] = meshgrid(1:12, 1:12);
+diagonal_elements_subscript = A(row == col);
+
+mat_sig_now=pval_sig_now;
+
+mat_sig_now(diagonal_elements_subscript)=1;
+mat_sig=mat_sig_now;
+mat_sig
+% plot
+
+%
+figure
+[XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+set(hp,'edgecolor','w');
+colorspace=brewermap(8,'Blues');
+colormap(colorspace)
+set(gca,'clim',[0 8]);
+axis square ij
+box on
+set(gca,'xtick',[],'ytick',[]);
+
+% Add custom legend using text objects
+hold on;
+text_legend_x = ngroup + 1.5; % X position for the legend text
+text_legend_y = [1:4]; % Y positions for each legend entry
+
+text(text_legend_x, text_legend_y(1), 'ns', 'Color', colorspace(2, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(2), '< 0.05', 'Color', colorspace(4, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(3), '< 0.01', 'Color', colorspace(6, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(4), '< 0.001', 'Color', colorspace(8, :), 'FontSize', 10, 'FontWeight', 'bold');
+
+hold off;
+%
+diams = 5; % coefficient of marker size
+%Obtain the axes size (in axpos) in Points
+currentunits = get(gca,'Units');
+set(gca, 'Units', 'Points');
+axpos = get(gca,'Position');
+set(gca, 'Units', currentunits);
+
+markersize = diams/diff(xlim)*min(axpos(3),axpos(4))*1.5; % Calculate Marker width in points
+list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+
+set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+xtickangle(90);
+
+
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\'];
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_kstestpvals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_signrankpvals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_ttest2pvals.pdf']);
+
+%%
+figure, 
+plot([0, 1], [1,1],'-','color',ccmap(1,:),'linewidth',6)
+hold on
+plot([0, 1], [2,2],'-','color',ccmap(2,:),'linewidth',6)
+hold on
+plot([0, 1], [4,4],'-','color',ccmap(4,:),'linewidth',6)
+hold on
+plot([0, 1], [6,6],'-','color',ccmap(6,:),'linewidth',6)
+hold on
+plot([0, 1], [8,8],'-','color',ccmap(8,:),'linewidth',6)
+
+%%
+
+
+%% calculate statistics for each iteration
+
+for iruns=1:nruns
+    clear data_in
+    %data_in=permuted_pupil_data_run{iruns}; % all trials
+    %data_in=permuted_pupil_data_run_mean{iruns};
+    data_in=permuted_pupil_data_run_mean_mean{iruns};
+    add_val=3;  
+    %  create array with conditions
+    clear data_all
+    for icond=1:nconditions
+        data_all{icond}=data_in(:,icond+add_val);
+    end
+
+    % 
+    ngroup=numel(data_all);
+    %pairs=nchoosek(1:ngroup,2);
+    pairs=pairs_both_sides;
+    
+    ks2stat=nan(length(pairs),1);
+    ttest2stat=nan(length(pairs),1);
+    signrankstat=nan(length(pairs),1);
+        
+    ks2pval=nan(length(pairs),1);
+    ttest2pval=nan(length(pairs),1);
+    signrankpval=nan(length(pairs),1);
+    
+    ttest2CI=nan(length(pairs),1);
+    
+    for ipair=1:size(pairs,1)
+        clear data1
+        clear data2
+        pair_now=pairs(ipair,:);    
+        data1=data_all{pair_now(1)};
+        data2=data_all{pair_now(2)};
+        data1_mean(pair_now(1))=nanmean(data1);
+        data2_mean(pair_now(2))=nanmean(data2);
+        
+        %run KS2 test
+        [~,ks2pval(ipair),ks2stat(ipair)]=kstest2(rmmissing(data1(:)),rmmissing(data2(:)),'tail','larger');
+        
+        % run signrank test
+        clear signrankstat_tmp
+        [signrankpval(ipair),~,signrankstat_tmp]=signrank(data1(:),data2(:),'Tail','right');
+        %signrankstat(ipair)=signrankstat_tmp.zval;
+        
+        % run ttest2 test 
+        clear ttest2stat_tmp
+        [~,ttest2pval(ipair),~, ttest2stat_tmp]=ttest2(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+        
+        ttest2stat(ipair)=ttest2stat_tmp.tstat;
+        
+        clear ranksumstat_tmp
+        [ranksumpval(ipair),~,ranksumstat_tmp]=ranksum(rmmissing(data1(:)),rmmissing(data2(:)),'Tail','right');
+
+        
+    end
+
+    data1_mean_all{iruns}=data1_mean;
+    data2_mean_all{iruns}=data2_mean;
+    
+    signrankpval_all{iruns}=signrankpval;
+    ks2pval_all{iruns}=ks2pval;
+    ttest2pval_all{iruns}=ttest2pval;
+    ranksum_all{iruns}=ranksumpval;
+    
+    ttest2stat_all{iruns}=ttest2stat;
+    signrankstat_all{iruns}=signrankstat;
+    ks2stat_all{iruns}=ks2stat;
+%
+
+end
+%% get pvals from bootstrapping iterations 
+
+signrankpval_array=cell2mat(signrankpval_all); 
+ranksumpval_array=cell2mat(ranksum_all')'; 
+
+ttest2pval_array=cell2mat(ttest2pval_all); 
+ks2pval_array=cell2mat(ks2pval_all);
+
+prctile_tresh=50;
+
+for ipairs=1:size(pairs,1)
+% signrankpval_bootstrap(ipairs)=length(find(signrankpval_array(ipairs,:)<alpha_tresh))/nruns;
+% ttest2pval_bootstrap(ipairs)=length(find(ttest2pval_array(ipairs,:)<alpha_tresh))/nruns;
+% ks2pval_bootstrap(ipairs)=length(find(ks2pval_array(ipairs,:)<alpha_tresh))/nruns;
+
+% signrankpval_bootstrap(ipairs)=prctile(signrankpval_array(ipairs,:),prctile_tresh);
+% ranksumpval_bootstrap(ipairs)=prctile(ranksumpval_array(ipairs,:),prctile_tresh);
+% 
+% ttest2pval_bootstrap(ipairs)=prctile(ttest2pval_array(ipairs,:),prctile_tresh);
+% ks2pval_bootstrap(ipairs)=prctile(ks2pval_array(ipairs,:),prctile_tresh);
+
+signrankpval_bootstrap(ipairs)=prctile(signrankpval_array(ipairs,:),prctile_tresh);
+ranksumpval_bootstrap(ipairs)=prctile(ranksumpval_array(ipairs,:),prctile_tresh);
+
+ttest2pval_bootstrap(ipairs)=prctile(ttest2pval_array(ipairs,:),prctile_tresh);
+ks2pval_bootstrap(ipairs)=prctile(ks2pval_array(ipairs,:),prctile_tresh);
+
+end
+%%
+statistical_test_chosen=ranksumpval_bootstrap;
+% create array for plotting results
+
+mat_sig_now=zeros(ngroup);
+pval_sig_now=zeros(ngroup);
+
+for ipairs=1:size(pairs,1)
+    
+    if sum(statistical_test_chosen(ipairs)>=0.05)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=2
+    elseif sum(statistical_test_chosen(ipairs)<0.05 & statistical_test_chosen(ipairs)>=0.01)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=4;
+    elseif sum(statistical_test_chosen(ipairs)<0.01 & statistical_test_chosen(ipairs)>=0.001)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=6;
+    elseif sum(statistical_test_chosen(ipairs)<0.001)==1
+        pval_sig_now(pairs(ipairs,1),pairs(ipairs,2))=8;
+    end
+
+end
+
+%mat_sig_now(mat_sig_now==2)=1;
+%mat_sig_now=squareform(squareform(pval_sig_now'));
+A=magic(12);
+[row, col] = meshgrid(1:12, 1:12);
+diagonal_elements_subscript = A(row == col);
+
+mat_sig_now=pval_sig_now;
+
+mat_sig_now(diagonal_elements_subscript)=1;
+mat_sig=mat_sig_now;
+mat_sig
+% plot
+
+%
+figure
+[XX,YY]=meshgrid([1:ngroup+1]-0.5,[1:ngroup+1]-0.5);
+hp=pcolor(XX,YY,padarray(mat_sig,[1 1],0,'post'));
+set(hp,'edgecolor','w');
+colorspace=brewermap(8,'Blues');
+colormap(colorspace)
+set(gca,'clim',[0 8]);
+axis square ij
+box on
+set(gca,'xtick',[],'ytick',[]);
+
+% Add custom legend using text objects
+hold on;
+text_legend_x = ngroup + 1.5; % X position for the legend text
+text_legend_y = [1:4]; % Y positions for each legend entry
+
+text(text_legend_x, text_legend_y(1), 'ns', 'Color', colorspace(2, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(2), '< 0.05', 'Color', colorspace(4, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(3), '< 0.01', 'Color', colorspace(6, :), 'FontSize', 10, 'FontWeight', 'bold');
+text(text_legend_x, text_legend_y(4), '< 0.001', 'Color', colorspace(8, :), 'FontSize', 10, 'FontWeight', 'bold');
+
+hold off;
+%
+diams = 5; % coefficient of marker size
+%Obtain the axes size (in axpos) in Points
+currentunits = get(gca,'Units');
+set(gca, 'Units', 'Points');
+axpos = get(gca,'Position');
+set(gca, 'Units', currentunits);
+
+markersize = diams/diff(xlim)*min(axpos(3),axpos(4))*1.5; % Calculate Marker width in points
+list_conditions={'0','30','60','90','120','150','180','210','240','270','300','330','control'}
+
+set(gca,'xtick',[1:length(list_conditions)],'xticklabel',list_conditions);
+set(gca,'ytick',[1:length(list_conditions)],'yticklabel',list_conditions);
+xtickangle(90);
+
+
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\'];
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_kstestpvals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_signrankpvals.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1D_statistical_test_12directions_btstrp_ttest2pvals.pdf']);
+
+%%
