@@ -50,11 +50,8 @@ clear Z
 clear X
 X=diameter{iAn};
 %X=velocity{iAn};
-% Z = bsxfun(@rdivide, bsxfun(@minus, X, nanmean(X)) , ...
-%                     nanstd(X));
-
-Z=zscore(X);
-
+Z = bsxfun(@rdivide, bsxfun(@minus, X, nanmean(X)) , ...
+                    nanstd(X));
 %Z=velocity{iAn};
 %Z_velocity=lowpass(X);
 for iStim = 1:nstims-1
@@ -377,9 +374,9 @@ title '60-240';
 
 set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\Figure1C\']; 
-%print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_fixed.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'Figure1C_summary_pupildynamic_13mice_zscored_fixed.pdf']);
 
-%% difference area
+%%
 ylimitation_areazscored=[-0.5 1.5];
 
 frameRate=315/10;

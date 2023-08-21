@@ -132,15 +132,45 @@ box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_raw_diam_relative_delta_pupil_SEM_mice.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_raw_diam_relative_delta_pupil_SEM_mice.pdf']);
 
 %% 
+
+%% ONLY AVERAGES PER ANIMAL + MEAN ACROSS ANIMALS
+colors=jet(13);
+colors_transparency=colors;
+colors_transparency=colors_transparency;
+figure(2)
+clf
+for iAn=1:length(trials_temporal_mean)
+    errorbar(100*mean_values_temporal{iAn}, 100*(mean_values_nasal{iAn} - sem_values_nasal{iAn}),100*(mean_values_nasal{iAn} + sem_values_nasal{iAn}),100*mean_values_nasal{iAn}, 100*(mean_values_temporal{iAn} - sem_values_temporal{iAn}),100*( mean_values_temporal{iAn} + sem_values_temporal{iAn}), 'o', 'MarkerFaceColor', colors(iAn,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
+    hold on;
+end
+
+hold on
+errorbar(100*mean_values_temporal_main, 100*mean_values_nasal_main, 100*(mean_values_nasal_main- lower_ci_temporal_main),100*(upper_ci_nasal_main - mean_values_nasal{iAn}), 100*(mean_values_temporal_main - lower_ci_temporal_main),100*(upper_ci_temporal_main - mean_values_temporal_main),'o', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5,'Color','k', 'MarkerSize', 12);
+
+hold on
+plot([-100 100], [-100 100],'--k');
+
+ylim([-20, 70])
+xlim([-20, 40])
+
+ylabel('Pupil size change (%) NASAL', 'FontSize',18,'Color','k');
+xlabel('Pupil size change (%) TEMPORAL','FontSize',18,'Color','k');
+set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_diam_relative_delta_pupil_SEM_mice_mean.pdf']);
+
 %% WITH CI
 colors=jet(13);
 colors_transparency=colors;
 colors_transparency=colors_transparency;
 colors_transparency(:,4)=0.5;
-figure(2)
+figure(1)
 clf
 for iAn=1:length(trials_temporal_mean)
     data_temporal=trials_temporal_mean{iAn};
@@ -175,7 +205,7 @@ box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
-print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_raw_diam_relative_delta_pupil_CI_mice.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure1F_raw_diam_relative_delta_pupil_CI_mice.pdf']);
 
 
    
