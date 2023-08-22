@@ -44,7 +44,7 @@ newdir={'140623_KS092_2P_KS\run01_ori_ds_V1',...
              '170110_KS173_2P_KS\run03_ori12_V1_awake',...
              '151007_KS145_2P_KS\run034_ori_ds_V1_full',... % dodane
              '151007_KS145_2P_KS\run03_ori_ds_V1_full',...% dodane
-             '170107_KS174_2P_KS\run03_ori12_V1',...% dodane
+             ... %'170107_KS174_2P_KS\run03_ori12_V1',...% dodane duplicated
              '170110_KS174_2P_KS\run03_ori12_V1_awake',...% dodane
              '170108_KS174_2P_KS\run03_ori12_V1_awake',... % dodane
              '170104_KS173_2P_KS\run03_ori12_V1',... % dodane  remove for heatmaps 100 frames

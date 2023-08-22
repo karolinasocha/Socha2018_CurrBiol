@@ -8,6 +8,7 @@
 % calculates correlation between velocity and pupil diameter
 % KS 2018/05/04
 % open plot_peak_eye_depends_stim to create trials_eye_stims
+selected_loc_animals=[2     4    11    10];
 
 %% eye data calculate epochs
 % fixed pupil dynamics; before issue because post frames were not taken
@@ -251,13 +252,13 @@ animal_id_list=unique(new_pupil_data.animal_id);
 y=animal_id_list
 % significant_session_index=find(pval_session<0.05);
 
-[x1, y1] =histc(new_pupil_data.animal_id,animal_id_list);
-[x2, y2] =histc(new_pupil_data.animal_id(significant_session_index),animal_id_list);
+% [x1, y1] =histc(new_pupil_data.animal_id,animal_id_list);
+% [x2, y2] =histc(new_pupil_data.animal_id(significant_session_index),animal_id_list);
 
-figure, 
-bar(animal_id_list,x1, 'FaceColor', [0.5 0.5 0.5]);
-hold on
-bar(animal_id_list,x2, 'FaceColor', [0.5 0.2 0.8]);
+% figure, 
+% bar(animal_id_list,x1, 'FaceColor', [0.5 0.5 0.5]);
+% hold on
+% bar(animal_id_list,x2, 'FaceColor', [0.5 0.2 0.8]);
 
 ylabel('#sessions', 'Fontsize', 16);
 xlabel('mouse id','Fontsize', 16);
@@ -271,12 +272,12 @@ filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Fig
 %print(gcf,'-dpdf',[filepathanalysis, 'significant_session_per_animal_stationary.pdf']);
 %%
 %% average sessions from the same animal
-
-data_nasal=appendedArray(:,order_nasal);
-data_temporal=appendedArray(:,order_temporal);
-
-%[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
-[pval(iAn), h0(iAn), stats{iAn}]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
+% 
+% data_nasal=appendedArray(:,order_nasal);
+% data_temporal=appendedArray(:,order_temporal);
+% 
+% %[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
+% [pval(iAn), h0(iAn), stats{iAn}]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
 
 %% AVERAGE EFFECT PER ANIMAL
 
@@ -380,7 +381,7 @@ tt=cell2mat(pupil_animals_cell');
 
 fig(1) = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
     'centimeters','papersize',[21,29.7],'paperposition',[0,0,21,29.7]);
-
+clf
 
 imagesc(100*tt)
 axis tight

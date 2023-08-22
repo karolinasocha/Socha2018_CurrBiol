@@ -40,7 +40,7 @@ newdir={'140623_KS092_2P_KS\run01_ori_ds_V1',...
              '170110_KS173_2P_KS\run03_ori12_V1_awake',...
              '151007_KS145_2P_KS\run034_ori_ds_V1_full',... % dodane
              '151007_KS145_2P_KS\run03_ori_ds_V1_full',...% dodane
-             '170107_KS174_2P_KS\run03_ori12_V1',...% dodane
+             ... %'170107_KS174_2P_KS\run03_ori12_V1',...% dodane
              '170110_KS174_2P_KS\run03_ori12_V1_awake',...% dodane
              '170108_KS174_2P_KS\run03_ori12_V1_awake',... % dodane
              '170104_KS173_2P_KS\run03_ori12_V1',... % dodane  remove for heatmaps 100 frames
@@ -124,19 +124,19 @@ end
 %trials_eye_stims=response_norm_baseline
 
 %%
-clear animals_array
- addpath 'G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\qunatify_same_animals'
- pattern_string='KS'
-[animals_array]=find_sameanimals(newdir,pattern_string)
-
-[x y]=find(animals_array==iAn)
-%animals_array(iAn,~isnan(animals_array(iAn,:)))
-
-for iAn=1:size(newdir,2)
-    [x y]=find(animals_array==iAn);
-    x_animal(iAn)=x;
-    y_session(iAn)=y;
-end
+% clear animals_array
+%  addpath 'G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\qunatify_same_animals'
+%  pattern_string='KS'
+% [animals_array]=find_sameanimals(newdir,pattern_string)
+% 
+% [x y]=find(animals_array==iAn)
+% %animals_array(iAn,~isnan(animals_array(iAn,:)))
+% 
+% for iAn=1:size(newdir,2)
+%     [x y]=find(animals_array==iAn);
+%     x_animal(iAn)=x;
+%     y_session(iAn)=y;
+% end
 %%
 clear resp_loc_velo_trials
 clear resp_still_velo_trials

@@ -243,8 +243,8 @@ errorbar(100*mean_values_temporal_main, 100*mean_values_nasal_main, 100*(mean_va
 
 plot([-100 100], [-100 100],'--k');
 
-ylim([-30, 70])
-xlim([-30, 70])
+ylim([-10, 70])
+xlim([-10, 40])
 
 ylabel('Pupil size change (%) NASAL', 'FontSize',18,'Color','k');
 xlabel('Pupil size change (%) TEMPORAL','FontSize',18,'Color','k');
