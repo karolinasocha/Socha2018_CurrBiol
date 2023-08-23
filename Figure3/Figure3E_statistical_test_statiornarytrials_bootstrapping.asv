@@ -45,7 +45,7 @@ newdir={'140623_KS092_2P_KS\run01_ori_ds_V1',...
              '170110_KS173_2P_KS\run03_ori12_V1_awake',...
              '151007_KS145_2P_KS\run034_ori_ds_V1_full',... % dodane
              '151007_KS145_2P_KS\run03_ori_ds_V1_full',...% dodane
-             '170107_KS174_2P_KS\run03_ori12_V1',...% dodane
+             ... %'170107_KS174_2P_KS\run03_ori12_V1',...% dodane duplicated
              '170110_KS174_2P_KS\run03_ori12_V1_awake',...% dodane
              '170108_KS174_2P_KS\run03_ori12_V1_awake',... % dodane
              '170104_KS173_2P_KS\run03_ori12_V1',... % dodane  remove for heatmaps 100 frames
@@ -169,7 +169,7 @@ clear tstop
 locthresh=1;
 stillthresh=0.25;
 perthresh_stationary=0.95;
-perthresh=0.1;
+perthresh=0.7;
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -295,7 +295,6 @@ stats_original_signrank = stats_original.signedrank;
 
 [~, p_original_ttest2, ~] = ttest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','right');
 
-
 %[~, p_original_kstest2]=kstest2(ddata_nasal_still(:),ddata_temporal_still(:),'alpha',0.05,'Tail','larger');
 
 [~, p_original_kstest2, stat_original_kstest2]=kstest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','larger');
@@ -313,13 +312,16 @@ fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 
 n_runs=1000
 n_sampled_animals=5
-n_sampled_trials=3
+n_sampled_trials=6
 n_pairs = 6;
-ndrawnpoints=3
+ndrawnpoints=6
 
 tmpx_all=[];
 tmpy_all=[];
-    
+
+tty_temporal_mean=nan([n_runs,n_pairs]);
+ttx_nasal_mean=nan([n_runs,n_pairs]);
+
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
@@ -432,6 +434,10 @@ for iruns=1:n_runs
     tmpx_all=[tmpx_all,x_nasal2];
     tmpy_all=[tmpy_all,x_temporal2];
     end
+    
+    ttx_nasal_mean(iruns,:)=nanmean(squeeze(nanmean(nanmean(tmpx,4),1)),1);
+    tty_temporal_mean(iruns,:)=nanmean(squeeze(nanmean(nanmean(tmpy,4),1)),1);
+    
     %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
     [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     
@@ -445,11 +451,42 @@ for iruns=1:n_runs
     
 end
 
-prctile_tresh=97.5;
-fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
-fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
-fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
-fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+%%
+[~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+[pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+
+fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
+fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+
+% test2 mean bootstrapping p-value:  1.24e-98
+% ranksum mean bootstrapping p-value:  1.06e-85
+
+%%
+% [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
+% 
+% [pval_bootstrap_mean_signrank, ~, stats_bootstrap_mean_signrank] = signrank(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
+% 
+% [pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
+% 
+% [~, pval_bootstrap_mean_kstest2, stats_bootstrap_mean_kstest2]=kstest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','larger');
+% 
+% fprintf('kstest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_kstest2);
+% fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
+% fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+% fprintf('signrank mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_signrank);
+
+
+%%
+prctile_tresh=50;
+fprintf('kstest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 50 prctile p-value:  5.61e-01
+% ttest2 bootstrapping 50 prctile p-value:  5.39e-33
+% ranksum bootstrapping 50 prctile p-value:  8.05e-40
+% signrank bootstrapping 50 prctile p-value:  2.24e-73
 
 % kstest2 bootstrapping 97.5 prctile p-value:  1.00e+00
 % ttest2 bootstrapping 97.5 prctile p-value:  2.02e-02
