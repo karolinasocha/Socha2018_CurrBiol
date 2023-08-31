@@ -132,7 +132,7 @@ clear tstop
 locthresh=1;
 stillthresh=0.25;
 perthresh_stationary=0.95;
-perthresh=0.1;
+perthresh=0.05;
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -185,6 +185,23 @@ clear still_trial
 clear nondef_trial
     end
 
+    %%
+    %% fraction of locomotion trials, stationary and intermittent
+for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:12)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:12)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:12)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:12),1)*size(nondefined{iAn}(:,1:12),2);
+end
+
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+
+% [12% (loc)    34% (nondef)    53% (still)] criteria: 95% with 1cm/s
+%[45 (% loc)     1(% nondef)    53% (still)] criteria: 5% with 1cm/s
+%(includes both)
     %%
 
 clear av_nondef_eye_trials

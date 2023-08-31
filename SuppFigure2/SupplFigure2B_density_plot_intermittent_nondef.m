@@ -131,7 +131,7 @@ clear tstop
 locthresh=1;
 stillthresh=0.25;
 perthresh_stationary=0.95;
-perthresh=0.40;
+perthresh=0.95; % it was 40% but changed to original
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -183,8 +183,21 @@ clear loc_trial
 clear still_trial
 clear nondef_trial
     end
+%% fraction of locomotion trials, stationary and intermittent
+for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:12)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:12)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:12)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:12),1)*size(nondefined{iAn}(:,1:12),2);
+end
 
-    %%
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+
+% [12% (loc)    34% (nondef)    53% (still)]
+%%
 
 clear av_nondef_eye_trials
 clear av_still_eye_trials
@@ -417,6 +430,10 @@ fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranks
 % intermittent pval<0.01
 % ttest2 mean bootstrapping p-value:  7.73e-04 p=0.0077
 % ranksum mean bootstrapping p-value:  6.25e-03 p=0.0063
+
+% 5-95% >1cm/s
+% ttest2 mean bootstrapping p-value:  1.89e-01
+% ranksum mean bootstrapping p-value:  5.04e-02
 %%
 [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
 
@@ -477,7 +494,7 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 'layer','top','color','none','fontsize',14,'ticklength',get(gca,'ticklength')*4)       
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_nondef_40%_bootstrapped.pdf']);
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\SupplFigure2\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_nondef_5_95%_bootstrapped.pdf']);
 
 

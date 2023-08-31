@@ -129,9 +129,9 @@ clear tstop
 % perthresh=0.05;
 
 locthresh=1;
-stillthresh=0.25;
+stillthresh=1;
 perthresh_stationary=0.95;
-perthresh=0.40;
+perthresh=0.05; % was 95% and 40%; 5% to include all movement-related trials
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -184,6 +184,21 @@ clear still_trial
 clear nondef_trial
     end
 
+    %%
+    %% fraction of locomotion trials, stationary and intermittent
+for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:12)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:12)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:12)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:12),1)*size(nondefined{iAn}(:,1:12),2);
+end
+
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+
+% [12% (loc)    34% (nondef)    53% (still)]
     %%
 
 clear av_nondef_eye_trials
@@ -408,6 +423,23 @@ for iruns=1:n_runs
     
 end
 %%
+[~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+[pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+
+fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
+fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+
+% ttest2 mean bootstrapping p-value:  6.96e-01
+% ranksum mean bootstrapping p-value:  5.62e-01
+
+% 95% running with 1cm/s
+% ttest2 mean bootstrapping p-value:  2.13e-02
+% ranksum mean bootstrapping p-value:  6.99e-03
+
+%5% running 1cm/s
+%ttest2 mean bootstrapping p-value:  3.04e-01
+%ranksum mean bootstrapping p-value:  1.95e-01
+%%
 [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
 
 [pval_bootstrap_mean_signrank, ~, stats_bootstrap_mean_signrank] = signrank(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
@@ -458,5 +490,5 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\SuppFigure2\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_locomotion_40%_bootstrapped.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_locomotion_5%_bootstrapped.pdf']);
 
