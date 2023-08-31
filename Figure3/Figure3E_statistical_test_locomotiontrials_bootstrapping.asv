@@ -177,9 +177,9 @@ end;
 % [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials(1:length(vval),vval,...
 %     tstart,tstop,locthresh,stillthresh,perthresh);
 locthresh=1;  % locomotion treshold 1cm/s
-stillthresh=0.25; % stationary treshold 0.5cm/s
+stillthresh=1; % stationary treshold 0.5cm/s
 perthresh_stationary=0.95; % stationary fraction 
-perthresh=0.4; % locomotion fraction 0.7
+perthresh=0.05; % locomotion fraction 0.7
 
   [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials_val_stationary(1:length(vval),vval,...
       tstart,tstop,locthresh,stillthresh,perthresh,perthresh_stationary);
@@ -216,6 +216,19 @@ clear loc_trial
 clear still_trial
 clear nondef_trial
     end
+%%
+    for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:end-1)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:end-1)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:end-1)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:end-1),1)*size(nondefined{iAn}(:,1:end-1),2);
+end
+
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+% 29 % (movement)     0    71 % (still)
 
     %%
 
@@ -281,7 +294,6 @@ for iAn=1:length(newdir)
                 
        end
 end
-
 
 [p_original_signrank, ~, stats_original] = signrank(ddata_nasal_loc2(:),ddata_temporal_loc2(:),'Tail','right');
 stats_original_signrank = stats_original.signedrank;
@@ -442,7 +454,16 @@ for iruns=1:n_runs
     
 end
 %%
+[~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+[pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
 
+fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
+fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+
+%ttest2 mean bootstrapping p-value:  8.31e-05
+%ranksum mean bootstrapping p-value:  2.61e-04
+% ttest2 mean bootstrapping p-value:  1.12e-01
+% ranksum mean bootstrapping p-value:  7.71e-02
 %%
 [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
 
@@ -519,5 +540,5 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_locomotion_dF_bootstrapped.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_locomotion_40%_dF_bootstrapped.pdf']);
 

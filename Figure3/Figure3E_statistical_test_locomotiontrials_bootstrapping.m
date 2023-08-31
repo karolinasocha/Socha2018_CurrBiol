@@ -460,6 +460,10 @@ end
 fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
 fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
 
+% 5% at least 1cm/s criteria for running
+%ttest2 mean bootstrapping p-value:  8.31e-05
+%ranksum mean bootstrapping p-value:  2.61e-04
+
 % ttest2 mean bootstrapping p-value:  1.12e-01
 % ranksum mean bootstrapping p-value:  7.71e-02
 %%
