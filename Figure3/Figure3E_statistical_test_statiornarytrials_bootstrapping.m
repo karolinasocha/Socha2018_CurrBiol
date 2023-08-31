@@ -167,9 +167,9 @@ clear tstop
 % perthresh=0.05;
 
 locthresh=1;
-stillthresh=0.25;
+stillthresh=1;
 perthresh_stationary=0.95;
-perthresh=0.7;
+perthresh=0.05;
 
 tstart = nan(size(expt2{iAn}.frames.stims));
 k=0;
@@ -223,7 +223,21 @@ clear nondef_trial
     end
 
     %%
+    for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:end-1)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:end-1)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:end-1)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:end-1),1)*size(nondefined{iAn}(:,1:end-1),2);
+end
 
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+
+% [29% (loc)     71% (still)]
+
+    %%
 clear av_nondef_eye_trials
 clear av_still_eye_trials
 clear av_loc_eye_trials
@@ -462,6 +476,8 @@ fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranks
 % test2 mean bootstrapping p-value:  1.24e-98
 % ranksum mean bootstrapping p-value:  1.06e-85
 
+%ttest2 mean bootstrapping p-value:  2.92e-99
+%ranksum mean bootstrapping p-value:  3.15e-83
 %%
 % [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(ttx_nasal_mean(:)),rmmissing(tty_temporal_mean(:)),'Tail','right');
 % 
@@ -535,4 +551,4 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_stationary_dF_bootstrapped.pdf']);
+%print(gcf,'-dpdf',[filepathanalysis, 'Figure3Fcorrect_resampling_plot_density_stationary_dF_bootstrapped.pdf']);

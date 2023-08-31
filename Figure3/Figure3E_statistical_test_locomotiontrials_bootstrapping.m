@@ -177,9 +177,9 @@ end;
 % [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials(1:length(vval),vval,...
 %     tstart,tstop,locthresh,stillthresh,perthresh);
 locthresh=1;  % locomotion treshold 1cm/s
-stillthresh=0.25; % stationary treshold 0.5cm/s
+stillthresh=1; % stationary treshold 0.5cm/s
 perthresh_stationary=0.95; % stationary fraction 
-perthresh=0.4; % locomotion fraction 0.7
+perthresh=0.05; % locomotion fraction 0.7
 
   [loctrial{iAn},stilltrial{iAn}] = select_locomotion_trials_val_stationary(1:length(vval),vval,...
       tstart,tstop,locthresh,stillthresh,perthresh,perthresh_stationary);
@@ -216,6 +216,19 @@ clear loc_trial
 clear still_trial
 clear nondef_trial
     end
+%%
+    for iAn=1:length(loctrial)
+n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:end-1)));
+n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:end-1)));
+n_nondef_trials(iAn)=sum(sum(nondefined{iAn}(:,1:end-1)));
+n_all_trials(iAn)=size(nondefined{iAn}(:,1:end-1),1)*size(nondefined{iAn}(:,1:end-1),2);
+end
+
+fraction_loc_trials=sum(n_loc_trials)/sum(n_all_trials);
+fraction_still_trials=sum(n_still_trials)/sum(n_all_trials);
+fraction_nondef_trials=sum(n_nondef_trials)/sum(n_all_trials);
+round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
+% 29 % (movement)     0    71 % (still)
 
     %%
 
