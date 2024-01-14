@@ -3,23 +3,23 @@ clear all
 
 % load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_0_05.mat');
 % meanData_0_05=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_05_1.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_05_1.mat');
 meanData_05_1=meanData
 
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_1_15.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_1_15.mat');
 meanData_1_15=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_15_2.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_15_2.mat');
 meanData_15_2=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_2_25.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_2_25.mat');
 meanData_2_25=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_25_3.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_25_3.mat');
 meanData_25_3=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_3_35.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_3_35.mat');
 meanData_3_35=meanData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_35_4.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_35_4.mat');
 meanData_35_4=meanData
 
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_45_5.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_45_5.mat');
 meanData_45_5=meanData
 mean_Data=[meanData_05_1;meanData_1_15;meanData_15_2;meanData_2_25;meanData_25_3;meanData_3_35;meanData_35_4;;meanData_45_5];
 
@@ -27,22 +27,22 @@ mean_Data=[meanData_05_1;meanData_1_15;meanData_15_2;meanData_2_25;meanData_25_3
 %%
 % load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_0_05.mat');
 % semData_0_05=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_05_1.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_05_1.mat');
 semData_05_1=semData
 
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_1_15.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_1_15.mat');
 semData_1_15=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_15_2.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_15_2.mat');
 semData_15_2=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_2_25.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_2_25.mat');
 semData_2_25=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_25_3.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_25_3.mat');
 semData_25_3=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_3_35.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_3_35.mat');
 semData_3_35=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_35_4.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_35_4.mat');
 semData_35_4=semData
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_45_5.mat');
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_45_5.mat');
 semData_45_5=semData
 
 sem_Data=[semData_05_1;semData_1_15;semData_15_2;semData_2_25;semData_25_3;semData_3_35;semData_35_4;semData_45_5];
@@ -78,7 +78,7 @@ end
 end
 % ax=axes('Position',[1,2,1,3]);
 set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\']; 
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\']; 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure1E_pupil_effect_timeStimulation.pdf']);
 
 %%

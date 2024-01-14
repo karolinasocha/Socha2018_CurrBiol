@@ -110,11 +110,11 @@ mean_pupil_delta=100*cell2mat(pupil_animals_cell');
 meanData = nanmean(mean_pupil_delta);
 stdData = nanstd(mean_pupil_delta);
 
-save('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\meanData_05_1.mat','meanData')
+save('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\meanData_05_1.mat','meanData')
 
 % Calculate the Standard Error of the Mean (SEM)
 semData = stdData ./ sqrt(size(mean_pupil_delta, 1));
-save('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\semData_05_1.mat','semData')
+save('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\semData_05_1.mat','semData')
 
 % Define x-axis values (e.g., assuming 5 data points)
 x = 1:numel(meanData);
@@ -137,7 +137,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 % filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1E\'
+filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\'
 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure1E_average_raw_diam_relative_delta_pupil_SEM_animals_05_1.pdf']);
 
