@@ -316,7 +316,7 @@ fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
 n_runs=1000
-n_sampled_animals=6
+n_sampled_animals=5
 n_sampled_trials=3
 n_pairs = 6;
 ndrawnpoints=3
@@ -459,6 +459,17 @@ end
 
 fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
 fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+
+%ttest2 mean bootstrapping p-value:  1.57e-04
+%ranksum mean bootstrapping p-value:  5.29e-04
+% nanmean(nanmean(ttx_nasal_mean,2)) 86.2436
+%nanmean(nanmean(tty_temporal_mean,2)): 81.1439
+
+% nanstd(nanmean(tty_temporal_mean,2)): 21.9492
+% nanstd(nanmean(ttx_nasal_mean,2)): 23.4164
+
+%ttest2 mean bootstrapping p-value:  1.16e-04
+%ranksum mean bootstrapping p-value:  3.70e-04
 
 % 5% at least 1cm/s criteria for running
 %ttest2 mean bootstrapping p-value:  8.31e-05

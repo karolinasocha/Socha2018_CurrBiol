@@ -4,7 +4,7 @@
 
 clear all
 % this load processed data for checking statistical tests
-load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\new_pupil_data.mat')
+load('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\new_pupil_data_time_15_2.mat')
 
 %% pvals for individual animals
 clear h0
@@ -183,9 +183,11 @@ set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
 box off
 
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
+% filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-%print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals.pdf']);
+filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\'
+
+print(gcf,'-dpdf',[filepathanalysis, 'Figure1E_average_raw_diam_relative_delta_pupil_SEM_animals_15_2.pdf']);
 
 % calculate mean + SEM
 % meanData =[16.1359   12.2291    8.1056    4.2092   -0.3538    1.4475    0.2671   -1.1895   -0.1307    3.9853    4.9183   23.9914]

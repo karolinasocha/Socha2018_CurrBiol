@@ -94,7 +94,12 @@ for iAn=1:size(tcs,2)
         [tc_velocity_stims{iAn} tc_trial_velocity_stims{iAn}]=tcEpochAverage2(velocity{iAn},stims{iAn});
         [tc_velocity_epochs{iAn} tc_trial_velocity_epochs{iAn}]=tcEpochAverage2(velocity{iAn},epochs{iAn});
 end
- 
+%%
+n_boutons=[];
+for iAn=1:size(tcs,2)
+n_boutons(iAn)=size(tc_boutons{iAn},2);
+end
+
 %%
 clear response_norm_baseline
 for iAn=1:size(tcs,2)
@@ -470,8 +475,13 @@ end
 [~, pval_bootstrap_mean_ttest2]=ttest2(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
 [pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
 
-fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2);
-fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum);
+fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2)
+fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum)
+
+fprintf('averaged dF/F nasal  %.2e\n', nanmean(nanmean(ttx_nasal_mean,2)))
+fprintf('averaged dF/F temporal  %.2e\n', nanmean(nanmean(tty_temporal_mean,2)))
+fprintf('std dF/F nasal  %.2e\n',nanstd(nanmean(ttx_nasal_mean,2)))
+fprintf('std dF/F temporal  %.2e\n', nanstd(nanmean(tty_temporal_mean,2)))
 
 % test2 mean bootstrapping p-value:  1.24e-98
 % ranksum mean bootstrapping p-value:  1.06e-85

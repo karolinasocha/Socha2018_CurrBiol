@@ -311,6 +311,20 @@ fprintf('ttest2 original p-value:  %.2e\n', p_original_ttest2);
 fprintf('ranksum original p-value:  %.2e\n', p_original_ranksum);
 fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 
+nanmean(nanmean(nanmean(ddata_nasal_still2,1),3))
+nanstd(nanmean(nanmean(ddata_nasal_still2,1),3))
+
+nanmean(nanmean(nanmean(ddata_temporal_still2,1),3))
+nanstd(nanmean(nanmean(ddata_temporal_still2,1),3))
+
+xna=(nanmean(ddata_nasal_still2,3));
+mean_na=nanmean(xna(:));
+std_na=nanstd(xna(:))/sqrt(5);
+
+xta=(nanmean(ddata_temporal_still2,3));
+mean_ta=nanmean(xta(:));
+std_ta=nanstd(xta(:))/sqrt(5);
+
 % kstest2 original p-value:  8.17e-01
 % ttest2 original p-value:  3.29e-01
 % ranksum original p-value:  2.42e-01
@@ -329,6 +343,10 @@ n_pairs = 6;
 ndrawnpoints=6
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
+
+tty_temporal_mean=nan([n_runs,n_pairs]);
+ttx_nasal_mean=nan([n_runs,n_pairs]);
+
 
 x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
 x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
@@ -444,6 +462,9 @@ for iruns=1:n_runs
     tmpy_all=[tmpy_all,x_temporal2];
     
     end
+    ttx_nasal_mean(iruns,:)=nanmean(squeeze(nanmean(nanmean(tmpx,4),1)),1);
+    tty_temporal_mean(iruns,:)=nanmean(squeeze(nanmean(nanmean(tmpy,4),1)),1);
+    
     [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
     
     [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
@@ -455,6 +476,16 @@ for iruns=1:n_runs
     [~, pval_bootstrap_kstest2(iruns), stats_bootstrap_kstest2]=kstest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','larger');
 
 end
+%%
+[pval_bootstrap_mean_ranksum, ~, stats_bootstrap_mean_ranksum] = ranksum(rmmissing(nanmean(ttx_nasal_mean,2)),rmmissing(nanmean(tty_temporal_mean,2)),'Tail','right');
+
+%fprintf('ttest2 mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ttest2)
+fprintf('ranksum mean bootstrapping p-value:  %.2e\n', pval_bootstrap_mean_ranksum)
+
+fprintf('averaged dF/F nasal  %.2e\n', nanmean(nanmean(ttx_nasal_mean,2)))
+fprintf('averaged dF/F temporal  %.2e\n', nanmean(nanmean(tty_temporal_mean,2)))
+fprintf('std dF/F nasal  %.2e\n',nanstd(nanmean(ttx_nasal_mean,2)))
+fprintf('std dF/F temporal  %.2e\n', nanstd(nanmean(tty_temporal_mean,2)))
 
 %% PVAL TO BE REPORTED IN THE PAPER WITH BONFERRONI CORRECTION
 prctile_tresh=50;

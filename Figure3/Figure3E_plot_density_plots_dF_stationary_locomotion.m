@@ -363,7 +363,10 @@ tmpy(indx)=[];
 % tmpx - nasal
 % tmpy - temporal
 [p_still_signrank, h_still_signrank]=signrank(tmpx(:), tmpy(:),'Tail','right');
-
+p_still_signrank
+nanmean(tmpx(:)), nanmean(tmpy(:))
+% 62.9967 mean(tmpx(:))  +- 33.5360 (STD);  63.0177 (3)
+% 50.0917 mean(tmpy(:)) +- 27.5236 (STD); 50.1045(3)
 %% LOCOMOTION ALL SESSIONS
 % 
 rng('default');
