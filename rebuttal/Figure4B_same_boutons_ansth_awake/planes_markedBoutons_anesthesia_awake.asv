@@ -80,7 +80,7 @@ end
 end
 %% chose_awake_boutons=[144, 73, 244, 237]
 % Load the mask
-
+chose_awake_boutons=[144, 73, 244, 237]
 mask = tcs_handseg_awake.mask; % Assuming this is your loaded mask variable
 
 % Plot the mask
@@ -100,8 +100,8 @@ set(h, 'AlphaData', 0.5); % Adjust the transparency level as needed
 % hold on;
 
 % Get unique ROI numbers (excluding zero)
-roiNumbers = unique(mask(mask > 0));
-% roiNumbers=chose_awake_boutons
+% roiNumbers = unique(mask(mask > 0));
+roiNumbers=chose_awake_boutons
 % Loop through each ROI to label it
 for i = 1:length(roiNumbers)
     % Find pixels belonging to the current ROI
@@ -140,8 +140,8 @@ set(h, 'AlphaData', 0.5); % Adjust the transparency level as needed
 % hold on;
 
 % Get unique ROI numbers (excluding zero)
-roiNumbers = unique(mask(mask > 0));
-% roiNumbers = chose_anesthesia_boutons
+% roiNumbers = unique(mask(mask > 0));
+roiNumbers = chose_anesthesia_boutons
 % Loop through each ROI to label it
 for i = 1:length(roiNumbers)
     % Find pixels belonging to the current ROI
@@ -159,7 +159,7 @@ hold off;
 %%
 % Assuming your data is stored in this variable
 data_ansth = tcs_handseg_ansth.avRespSurf(:,chose_anesthesia_boutons);
-data_awake = tcs_handseg_awake.avRespSurf(:,chose_awake_boutons);
+data_awake = tcs_handseg_ansth.avRespSurf(:,chose_awake_boutons);
 yLimits = [min(data_ansth(:)), max(data_ansth(:))];
 
 figure;
@@ -171,7 +171,6 @@ for i = 1:4
     plot([0,0],[0,100],'-k','linewidth',3);
     hold on
     text(-500, 50, sprintf('dF/F\n100%%'), 'HorizontalAlignment', 'center','Rotation', 90);
-    text(-500, 200, num2str(chose_anesthesia_boutons(i)), 'HorizontalAlignment', 'center');
     
     ylim(yLimits); % Apply the common y-axis limits
     
@@ -196,7 +195,7 @@ for i = 1:4
     plot([0,0],[0,100],'-k','linewidth',3);
     hold on
     text(-500, 50, sprintf('dF/F\n100%%'), 'HorizontalAlignment', 'center','Rotation', 90);
-    text(-500, 200, num2str(chose_awake_boutons(i)), 'HorizontalAlignment', 'center');
+    
     ylim(yLimits); % Apply the common y-axis limits
     
     if i == 1
@@ -212,12 +211,6 @@ for i = 1:4
     box off
     axis off;
 end
-
-set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
-filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure4B_same_boutons_ansth_awake\']; 
-filename=sprintf(['Figure4B_samePlane_anesthesia_Awake_boutons_examples',newdir_awake(1:18),'.pdf'])
-
-print(gcf,'-dpdf',[filepathanalysis, filename]);
 
 
 %%

@@ -1,0 +1,127 @@
+clear all
+% newdir={'160707_KS164_2P_KS\run03_ori12_V1_anesthesia',...
+%     '160712_KS167_2P_KS\run03_ori12_V1_anesthesia',...
+%     '160621_KS166_2P_KS\run03_ori12_V1_anesthetized2',...
+%     '170110_KS173_2P_KS\run03_ori12_V1_anesthesia',...
+%     '170106_KS174_2P_KS\run03_ori12_V1_anesthesia',...
+%     '170110_KS174_2P_KS\run03_ori12_V1_anesthesia'};
+
+newdir={'160707_KS164_2P_KS\run03_ori12_V1_awake',...
+    '160712_KS167_2P_KS\run03_ori12_V1_awake',...
+    '160621_KS166_2P_KS\run03_ori12_V1_awake',...
+    '170110_KS173_2P_KS\run03_ori12_V1_awake',...
+    '170106_KS174_2P_KS\run03_ori12_V1',...
+    '170110_KS174_2P_KS\run03_ori12_V1_awake'};
+
+%%
+
+for iAn=1:size(newdir,2)
+expt{iAn} = frGetExpt(newdir{iAn});
+expt2{iAn} =doLoadStimLogs3(expt{iAn});
+nStim{iAn}=expt2{iAn}.info.nStim;
+clear an_stat
+an_stat=load([expt{iAn}.dirs.analrootpn,'\stats_version_mean_values.mat']);
+stats_selected{iAn}=[an_stat.stats_version_mean_values.stats_boutons];
+stats_selected_normalized{iAn}=[an_stat.stats_version_mean_values.stats_boutons_normalized];
+end  
+%%
+stats_boutons_all=cell2mat(stats_selected)
+stats_boutons_all_norm=cell2mat(stats_selected_normalized)
+
+%%
+prefosi_norm_all=[stats_boutons_all_norm.ori_vector_sum_angle_degree];
+prefosi_all=[stats_boutons_all.ori_vector_sum_angle_degree];
+prefdsi_norm_all=[stats_boutons_all_norm.dir_vector_sum_angle_degree];
+prefdsi_all=[stats_boutons_all.dir_vector_sum_angle_degree];
+
+osi_norm_all=[stats_boutons_all_norm.ori_vector_sum_tune];
+osi_all=[stats_boutons_all.ori_vector_sum_tune];
+
+dsi_norm_all=[stats_boutons_all_norm.dir_vector_sum_tune];
+dsi_all=[stats_boutons_all.dir_vector_sum_tune];%% DSI scatter plot
+%%
+dsi_awake= dsi_all;
+osi_awake=osi_all;
+pref_ori_angle_awake=prefosi_all(find(osi_awake>0.2));
+pref_dir_angle_awake=prefdsi_all(find(dsi_awake>0.2));
+pref_dir_angle_awake_norm=prefdsi_norm_all(find(dsi_norm_all>0.2));
+choose_color=[0 0 0];
+%%
+
+%% get overlapping boutons:
+overlapping_OS_DS_index=intersect(find(osi_awake>0.2),find(dsi_awake>0.2));
+length(overlapping_OS_DS_index)/length(dsi_awake) % 20% overlapping
+
+dsi_awake= dsi_all;
+osi_awake=osi_all;
+
+pref_ori_angle_awake=prefosi_all(overlapping_OS_DS_index);
+pref_dir_angle_awake=prefdsi_all(overlapping_OS_DS_index);
+
+figure('name','awake')
+clf
+
+ax(3)=subplot(2,2,3);
+t = 0 : .01 : 2 * pi;
+P = polar(t, 100 * ones(size(t)));
+set(P, 'Visible', 'off');
+hold on
+%pref_osi_awake=pref_ori_angle_awake;
+ori_pref2=pref_ori_angle_awake;
+r1=rose((2*pi/360)*ori_pref2,30);
+set(r1,'color',choose_color);
+set(gca,'xdir','reverse');
+
+ax(4)=subplot(2,2,4)
+t = 0 : .01 : 2 * pi;
+P = polar(t, 100 * ones(size(t)));
+set(P, 'Visible', 'off')
+hold on
+%pref_osi_awake=pref_ori_angle_awake;
+ori_pref2=pref_dir_angle_awake;
+r2=rose((2*pi/360)*ori_pref2,30);
+set(r2,'color',choose_color);
+set(gca,'xdir','reverse');
+
+set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure4A_overlapping_DS_OS_boutons\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'Figure4A_overlap_OS_DS_boutons_preference_awake_subset.pdf']);
+%%
+
+%% get overlapping boutons:
+
+% overlapping_OS_DS_index=intersect(find(osi_awake>0.2),find(dsi_awake>0.2));
+% length(overlapping_OS_DS_index)/length(dsi_awake) % 20% overlapping
+
+pref_ori_angle_awake=prefosi_norm_all(overlapping_OS_DS_index);
+pref_dir_angle_awake=prefdsi_norm_all(overlapping_OS_DS_index);
+
+figure('name','awake')
+clf
+
+ax(3)=subplot(2,2,3);
+t = 0 : .01 : 2 * pi;
+P = polar(t, 100 * ones(size(t)));
+set(P, 'Visible', 'off');
+hold on
+%pref_osi_awake=pref_ori_angle_awake;
+ori_pref2=pref_ori_angle_awake;
+r1=rose((2*pi/360)*ori_pref2,30);
+set(r1,'color',choose_color);
+set(gca,'xdir','reverse');
+
+ax(4)=subplot(2,2,4)
+t = 0 : .01 : 2 * pi;
+P = polar(t, 100 * ones(size(t)));
+set(P, 'Visible', 'off')
+hold on
+%pref_osi_awake=pref_ori_angle_awake;
+ori_pref2=pref_dir_angle_awake;
+r2=rose((2*pi/360)*ori_pref2,30);
+set(r2,'color',choose_color);
+set(gca,'xdir','reverse');
+
+set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperposition',[0,0,20,20],'inverthardcopy','off');
+filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure4A_overlapping_DS_OS_boutons\']; 
+print(gcf,'-dpdf',[filepathanalysis, 'Figure4A_overlap_OS_DS_boutons_preference_awake_norm_subset.pdf']);
+
