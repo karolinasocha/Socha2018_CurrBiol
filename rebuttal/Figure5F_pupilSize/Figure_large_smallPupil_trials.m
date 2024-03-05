@@ -126,12 +126,7 @@ diameter=data_behav_40expt.diameter;
 diam=diameter;
 session_id= data_behav_40expt.session_id;
 animal_id= data_behav_40expt.animal_id;
-%%
-figure, plot(diam{iAn})
-%%
-iAn=1
-diam_norm_median=(diam{iAn}-nanmedian(diam{iAn}))./nanmedian(diam{iAn});
-diam_example=diam{iAn}
+
 %% creates epochs and re-order stimulus so it is consistent for all experiments 
 
 for iAn=1:size(diameter,2)
@@ -143,13 +138,19 @@ diam_zscore=zscore(diam{iAn});
 
 all_epochs=expt2{iAn}.frames.epochs;
 stim_epochs=expt2{iAn}.frames.stims;
+blank_epochs=expt2{iAn}.frames.blanks;
 
-% raw data
+% raw dataames.b
 clear eye_diam_entire_trace
 eye_diam_entire_trace=diam_raw;
 [av_raw_diam_epochs{iAn},trials_raw_diam_epochs{iAn}, av_raw_diam_stims{iAn}, trials_raw_diam_stims{iAn}]=calculate_average_pupil(eye_diam_entire_trace, all_epochs, stim_epochs);
 [trials_raw_diam_epochs_reordered{iAn}, trials_raw_diam_stims_reordered{iAn}]=calculate_same_stimulus_order(expt2{iAn},stimulus{iAn}, trials_raw_diam_epochs{iAn},trials_raw_diam_stims{iAn});
 [av_raw_diam_epochs_reordered{iAn}, av_raw_diam_stims_reordered{iAn}]=calculate_same_stimulus_order(expt2{iAn},stimulus{iAn}, av_raw_diam_epochs{iAn},av_raw_diam_stims{iAn});
+
+[av_raw_diam_epochs{iAn},trials_raw_diam_epochs{iAn}, av_raw_diam_blanks{iAn}, trials_raw_diam_blanks{iAn}]=calculate_average_pupil(eye_diam_entire_trace, all_epochs, blank_epochs);
+[trials_raw_diam_epochs_reordered{iAn}, trials_raw_diam_blanks_reordered{iAn}]=calculate_same_stimulus_order(expt2{iAn},stimulus{iAn}, trials_raw_diam_epochs{iAn},trials_raw_diam_blanks{iAn});
+[av_raw_diam_epochs_reordered{iAn}, av_raw_diam_blanks_reordered{iAn}]=calculate_same_stimulus_order(expt2{iAn},stimulus{iAn}, av_raw_diam_epochs{iAn},av_raw_diam_blanks{iAn});
+
 
 % substracted from minimum value
 clear eye_diam_entire_trace
