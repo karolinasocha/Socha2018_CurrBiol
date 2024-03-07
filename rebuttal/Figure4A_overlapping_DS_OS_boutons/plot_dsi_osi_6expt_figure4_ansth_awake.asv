@@ -87,28 +87,17 @@ set(gcf,'paperunits','centimeters','papersize' ,[20,20],'color','w','paperpositi
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure4A_overlapping_DS_OS_boutons\']; 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure4A_overlap_OS_DS_boutons_preference_awake_subset.pdf']);
 %%
-
-pref_ori_angle_awake
-nonoverlapping_DS_index=intersect(find(osi_awake<0.2),find(dsi_awake>0.2));
-nonoverlapping_OS_index=intersect(find(osi_awake>0.2),find(dsi_awake<0.2));
-
-pref_ori_angle_awake_NONOVERLAP=prefosi_all(nonoverlapping_OS_index);
-pref_dir_angle_awake_NONOVERLAP=prefdsi_all(nonoverlapping_DS_index);
-
-ranksum(pref_ori_angle_awake,pref_ori_angle_awake_NONOVERLAP)
-ranksum(pref_dir_angle_awake,pref_dir_angle_awake_NONOVERLAP)
 %% get NON-overlapping boutons:
 nonoverlapping_DS_index=intersect(find(osi_awake<0.2),find(dsi_awake>0.2));
 nonoverlapping_OS_index=intersect(find(osi_awake>0.2),find(dsi_awake<0.2));
 
-length(nonoverlapping_DS_index)/length(dsi_awake) % 20% overlapping
-length(nonoverlapping_OS_index)/length(dsi_awake) % 20% overlapping
+length(nonoverlapping_OS_DS_index)/length(dsi_awake) % 20% overlapping
 
 dsi_awake= dsi_all;
 osi_awake=osi_all;
 
-pref_ori_angle_awake=prefosi_all(nonoverlapping_OS_index);
-pref_dir_angle_awake=prefdsi_all(nonoverlapping_DS_index);
+pref_ori_angle_awake=prefosi_all(nonoverlapping_OS_DS_index);
+pref_dir_angle_awake=prefdsi_all(nonoverlapping_OS_DS_index);
 
 figure('name','awake')
 clf
@@ -126,7 +115,7 @@ set(gca,'xdir','reverse');
 
 ax(4)=subplot(2,2,4)
 t = 0 : .01 : 2 * pi;
-P = polar(t, 50 * ones(size(t)));
+P = polar(t, 100 * ones(size(t)));
 set(P, 'Visible', 'off')
 hold on
 %pref_osi_awake=pref_ori_angle_awake;
