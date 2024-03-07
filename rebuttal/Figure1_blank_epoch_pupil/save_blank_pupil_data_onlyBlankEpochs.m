@@ -195,7 +195,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1_blank_epoch_pupil'
+filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1_blank_epoch_pupil\'
 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure1E_average_raw_diam_relative_delta_pupil_SEM_animals_BLANK.pdf']);
 
@@ -232,7 +232,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 % filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1_blank_epoch_pupil'
+filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\Figure1_blank_epoch_pupil\'
 
 print(gcf,'-dpdf',[filepathanalysis, 'Figure1E_average_raw_diam_relative_delta_pupil_SEM_animals_BLANK_4stims.pdf']);
 
