@@ -20,15 +20,18 @@ load(pupil_name);
 diameter_pupil{iAn}=pupildata.diameter;
 diameter_stim{iAn}=pupildata.diameter.diam_stim;
 diameter_blanks{iAn}=pupildata.diameter.diam_prestim;
-diameter_blanks_post{iAn}=pupildata.diameter.diam_prestim;
+diameter_blanks_post{iAn}=pupildata.diameter.diam_poststim;
 diameter_av_epochs{iAn}=squeeze(nanmean(diameter_blanks{iAn},2));
-
+diameter_av_stims{iAn}=squeeze(nanmean(diameter_stim{iAn}(end-30:end,:,:),2));
 clear X
     X=pupildata.diameter.diameter;
 for istims=1:size(diameter_av_epochs{iAn},2)
     clear tmp2
     tmp2=diameter_av_epochs{iAn}(:,istims); % this is previous calculation in mm
     diameter_av_epochs_blanks{iAn}(:,istims) = nanmean(tmp2)
+    clear tmp3
+    tmp3=diameter_av_stims{iAn}(:,istims);
+    diameter_av_epochs_stims{iAn}(:,istims) = nanmean(tmp3)
 %     diameter_epochs_zscored{iAn}(:,istims) = bsxfun(@rdivide, bsxfun(@minus, tmp2, nanmean(X)) , ...
 %                      nanstd(X));
 end
@@ -36,22 +39,23 @@ end
 
  %% interpolate pupil   
 
-clear diam_interp
-for iAn=1:size(newdir,2)
-    for iStim=1:24
-    clear dtime
-    clear p2time
-    dtime = linspace(0,1,size(diameter_av_epochs{iAn}(:,iStim),1));
-    p2time =  linspace(0,1,60);
-    diam_interp{iAn}(:,iStim) = interp1(dtime,diameter_av_epochs{iAn}(:,iStim),p2time);
-%     diam_interp_zscored{iAn}(:,iStim) = interp1(dtime,diameter_epochs_zscored{iAn}(:,iStim),p2time);
-    
-    end
-end
+% clear diam_interp
+% for iAn=1:size(newdir,2)
+%     for iStim=1:24
+%     clear dtime
+%     clear p2time
+%     dtime = linspace(0,1,size(diameter_av_epochs{iAn}(:,iStim),1));
+%     p2time =  linspace(0,1,60);
+%     diam_interp{iAn}(:,iStim) = interp1(dtime,diameter_av_epochs{iAn}(:,iStim),p2time);
+% %     diam_interp_zscored{iAn}(:,iStim) = interp1(dtime,diameter_epochs_zscored{iAn}(:,iStim),p2time);
+%     
+%     end
+% end
 
 %%
 diameter_input=diameter_av_epochs_blanks;
-
+diameter_blanks_input=diameter_av_epochs_blanks;
+diameter_stims_input=diameter_av_epochs_blanks;
 %%
 clear diameter_mean
 stim0deg=[1 5 9 13 17 21];
@@ -64,6 +68,12 @@ diam_stimulus0deg(iAn,:,:)=diameter_input{iAn}(:,stim0deg);
 diam_stimulus90deg(iAn,:,:)=diameter_input{iAn}(:,stim90deg);
 diam_stimulus180deg(iAn,:,:)=diameter_input{iAn}(:,stim180deg);
 diam_stimulus270deg(iAn,:,:)=diameter_input{iAn}(:,stim270deg);
+
+diam_stimulus0deg_stims(iAn,:,:)=diameter_stims_input{iAn}(:,stim0deg);
+diam_stimulus90deg_stims(iAn,:,:)=diameter_stims_input{iAn}(:,stim90deg);
+diam_stimulus180deg_stims(iAn,:,:)=diameter_stims_input{iAn}(:,stim180deg);
+diam_stimulus270deg_stims(iAn,:,:)=diameter_stims_input{iAn}(:,stim270deg);
+
 end
 
 av_diam_stimulus0deg=squeeze(nanmean(diam_stimulus0deg,1));
@@ -71,13 +81,25 @@ av_diam_stimulus90deg=squeeze(nanmean(diam_stimulus90deg,1));
 av_diam_stimulus180deg=squeeze(nanmean(diam_stimulus180deg,1));
 av_diam_stimulus270deg=squeeze(nanmean(diam_stimulus270deg,1));
 
+av_diam_stimulus0deg_stims=squeeze(nanmean(diam_stimulus0deg_stims,1));
+av_diam_stimulus90deg_stims=squeeze(nanmean(diam_stimulus90deg_stims,1));
+av_diam_stimulus180deg_stims=squeeze(nanmean(diam_stimulus180deg_stims,1));
+av_diam_stimulus270deg_stims=squeeze(nanmean(diam_stimulus270deg_stims,1));
+
 %%
 av_diam_stimulus0deg=squeeze(nanmean(diam_stimulus0deg,1));
 av_diam_stimulus90deg=squeeze(nanmean(diam_stimulus90deg,3));
 av_diam_stimulus180deg=squeeze(nanmean(diam_stimulus180deg,3));
 av_diam_stimulus270deg=squeeze(nanmean(diam_stimulus270deg,3));
+
+%
+av_diam_stimulus0deg_stims=squeeze(nanmean(diam_stimulus0deg_stims,1));
+av_diam_stimulus90deg_stims=squeeze(nanmean(diam_stimulus90deg_stims,3));
+av_diam_stimulus180deg_stims=squeeze(nanmean(diam_stimulus180deg_stims,3));
+av_diam_stimulus270deg_stims=squeeze(nanmean(diam_stimulus270deg_stims,3));
 %%
 pupil_animals_cell=[diam_stimulus0deg(:,:,1), av_diam_stimulus90deg(:,:,1), av_diam_stimulus180deg(:,:,1), av_diam_stimulus270deg(:,:,1)];
+pupil_animals_cell_stims=[diam_stimulus0deg_stims(:,:,1), av_diam_stimulus90deg_stims(:,:,1), av_diam_stimulus180deg_stims(:,:,1), av_diam_stimulus270deg_stims(:,:,1)];
 
 %%
 
