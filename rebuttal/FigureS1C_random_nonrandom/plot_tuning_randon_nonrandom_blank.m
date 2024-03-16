@@ -49,7 +49,9 @@ velo_epochs=cell2mat(velo_animals);
 diam_blank_random_array=cell2mat(diam_interpolated_av);
 
 animal01_R=nanmean(diam_blank_random_array(:,1:2,:),2);
-diam_animals_R=[animal01_R, diam_blank_random_array(:,3:4,:)];
+animal02_R=nanmean(diam_blank_random_array(:,3:4,:),2);
+
+diam_animals_R=[animal01_R, animal02_R];
 
 diam_blank_random_av=squeeze(nanmean(diam_animals_R(45:60,:,:),1));
 diam_blank_random_av=diam_blank_random_av(:,1:12)
@@ -109,7 +111,11 @@ velo_epochs=cell2mat(velo_animals);
 diam_blank_non_random_array=cell2mat(diam_interpolated_av);
 
 animal01=nanmean(diam_blank_non_random_array(:,1:2,:),2);
-diam_animals=[animal01, diam_blank_non_random_array(:,3:4,:)];
+animal02=nanmean(diam_blank_non_random_array(:,3:4,:),2);
+
+diam_animals=[animal01, animal02];
+
+% diam_animals=[animal01, diam_blank_non_random_array(:,3:4,:)];
 
 diam_blank_non_random_av=squeeze(nanmean(diam_animals(45:60,:,:),1));
 diam_blank_non_random_av=diam_blank_non_random_av(:,1:12);

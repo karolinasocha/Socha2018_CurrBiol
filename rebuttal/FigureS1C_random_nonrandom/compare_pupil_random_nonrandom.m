@@ -45,7 +45,8 @@ end
 
 diam_random=cell2mat(diam_av_interpolated);
 animal01_R=nanmean(diam_random(:,1:2,:),2);
-diam_animals=[animal01_R,diam_random(:,3:4,:)];
+animal02_R=nanmean(diam_random(:,3:4,:),2);
+diam_animals=[animal01_R,animal02_R];
 diam_epochs_random=diam_animals;
 % diam_epochs=cell2mat(diam_interpolated);
 % diam_epochs_random=cell2mat(diam_interpolated);
@@ -152,7 +153,8 @@ end
 
 diam_nonrandom=cell2mat(diam_av_interpolated);
 animal01_nR=nanmean(diam_nonrandom(:,1:2,:),2);
-diam_animals_nR=[animal01_nR,diam_nonrandom(:,3:4,:)];
+animal02_nR=nanmean(diam_nonrandom(:,3:4,:),2);
+diam_animals_nR=[animal01_nR,animal02_nR];
 diam_epochs_non_random=diam_animals_nR;
 
 % diam_epochs=cell2mat(diam_interpolated);
@@ -242,7 +244,7 @@ clear y
 clear errBar
 x=1:size(diam_epochs_non_random,1);
 y=squeeze(diam_epochs_non_random(:,:,iStim));
-errBar=nanstd(y,[],2)./sqrt(ntrials);
+errBar=nanstd(y,[],2)./sqrt(nAn);
 H=shadedErrorBar(x,nanmean(y,2),errBar,'k');
 H.patch.FaceAlpha=0.3;
 hold on
