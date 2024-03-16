@@ -143,9 +143,9 @@ axis tight
 
 ylabel('Pupil area (mm2)', 'FontSize',16,'Color','k');
 xlabel('Directions (deg)','FontSize',16,'Color','k');
-set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[0.2, 1.2]);
+set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[0.6, 1.2]);
 set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
-ylim([0.6, 1.2])
+
 box off
 title('stimulation')
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
