@@ -120,6 +120,12 @@ diam_blank_non_random_av=diam_blank_non_random_av(:,1:12);
 
 %%
 %%
+fig = figure('name',sprintf('Pupil size behaviour'),'color','w','paperunits',...
+    'centimeters','papersize',[20,20],'paperposition',[0,0,20,20]);
+%
+
+ax_avpupil_stims_random = axes('position',[.2,.2,.1,.1],'units','normalized');
+axes(ax_avpupil_stims_random)
 meanData = nanmean(diam_blank_random_av);
 stdData = nanstd(diam_blank_random_av);
 semData = stdData ./ sqrt(size(diam_blank_random_av, 1));
@@ -132,8 +138,7 @@ semData_nR = stdData_nR ./ sqrt(size(diam_blank_non_random_av, 1));
 
 % Define x-axis values (e.g., assuming 5 data points)
 x = 1:numel(meanData);
-figure(1)
-clf
+
 % Plot the mean data
 plot(x, meanData, 'r', 'LineWidth', 2);
 hold on;
@@ -147,7 +152,7 @@ axis tight
 
 ylabel('Pupil area (mm2)', 'FontSize',16,'Color','k');
 xlabel('Directions (deg)','FontSize',16,'Color','k');
-set(gca,'xtick',[1:1:12],'xticklabel',[0:30:330],'ylim',[0.6, 1.2]);
+set(gca,'xtick',[1:3:12],'xticklabel',[0:90:330],'ylim',[0.6, 1.2]);
 set(gca,'tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
 
 box off
@@ -156,7 +161,7 @@ set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposi
 % filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
 %
-set(gcf,'paperunits','centimeters','papersize' ,[22,22],'color','w','paperposition',[0,0,21,21],'inverthardcopy','off');
+% set(gcf,'paperunits','centimeters','papersize' ,[22,22],'color','w','paperposition',[0,0,21,21],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\FigureS1C_random_nonrandom\']; 
-print(gcf,'-dpdf',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_BLANK.pdf']);
-print(gcf,'-dpng',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_BLANK.png']);
+print(gcf,'-dpdf',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_BLANK_v2.pdf']);
+print(gcf,'-dpng',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_BLANK_v2.png']);
