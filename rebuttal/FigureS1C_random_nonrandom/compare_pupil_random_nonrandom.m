@@ -99,12 +99,12 @@ set(gcf,'paperunits','centimeters','papersize' ,[22,22],'color','w','paperpositi
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\2p_analysis\pipeline_randomstimulus_behavior\']; 
 print(gcf,'-dpdf',[filepathanalysis, '\pupil_stimulus_results_3mice_rand_4sessions.pdf']);
 
+
 %% %
 newdir_nonrandom={'180823_KS501_2P_JC\run00_direction_12dir_4Hz',...
  '180824_KS501_2P_JC\run00_direction_12dir_4Hz',...
  '180823_KS503_2P_JC\run00_direction_12dir_4Hz',...
  '180824_KS503_2P_JC\run00_direction_12dir_4Hz'};
-
 
 analysis_path='J:\data\analysis\';
 
