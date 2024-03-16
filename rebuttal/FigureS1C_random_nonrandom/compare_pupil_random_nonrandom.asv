@@ -312,18 +312,12 @@ plot([cframesstim cframesstim],[0.5 2.5],'--','color','k');
 
 axis tight;
 box off
-
 ylim([0.6 1.2]);
 
-title(sprintf('%d deg',stimulus(iStim)))
-if iStim==1
-   
+title(sprintf('Stim %d',stimulus(iStim)))
 set(ax_avpupil_stims_nonrandom(iStim),'box','off','tickdir','out','xtick',[cframespre cframesstim],...
-   'xticklabel',[0 5],'XColor', 'none','ticklength',get(ax_avpupil_stims_nonrandom(iStim),'ticklength')*4);
-else
-    set(ax_avpupil_stims_nonrandom(iStim),'yticklabels',[],'box','off','tickdir','out','xtick',[cframespre cframesstim],...
-   'xticklabel',[0 5],'XColor', 'none','ticklength',get(ax_avpupil_stims_nonrandom(iStim),'ticklength')*4);
-end
+   'xticklabel',[0 5],'ticklength',get(ax_avpupil_stims_nonrandom(iStim),'ticklength')*4);
+
 
 axes(ax_avpupil_stims_random(iStim));
 clear x
@@ -346,18 +340,17 @@ ylim([0.6 1.2]);
 if iStim==1
    
 set(ax_avpupil_stims_random(iStim),'box','off','tickdir','out','xtick',[cframespre cframesstim],...
-   'xticklabel',[0 5],'XColor', 'none','ticklength',get(ax_avpupil_stims_random(iStim),'ticklength')*4);
+   'xticklabel',[0 5],'ticklength',get(ax_avpupil_stims_random(iStim),'ticklength')*4);
 else
-    set(ax_avpupil_stims_random(iStim),'yticklabels',[],'box','off','tickdir','out','xtick',[cframespre cframesstim],...
-   'xticklabel',[0 5],'XColor', 'none','ticklength',get(ax_avpupil_stims_random(iStim),'ticklength')*4);
-end
+    set(ax_avpupil_stims_random(iStim),'ytick',[],'box','off','tickdir','out','xtick',[cframespre cframesstim],...
+   'xticklabel',[0 5],'ticklength',get(ax_avpupil_stims_random(iStim),'ticklength')*4);
 
 end
 
 set(gcf,'paperunits','centimeters','papersize' ,[22,22],'color','w','paperposition',[0,0,21,21],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\FigureS1C_random_nonrandom\']; 
-print(gcf,'-dpdf',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_4sessions.pdf']);
-print(gcf,'-dpng',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_4sessions.png']);
+% print(gcf,'-dpdf',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_4sessions.pdf']);
+% print(gcf,'-dpng',[filepathanalysis, '\pupil_stimulus_results_3mice_nonrand_random_4sessions.png']);
 
 
 
