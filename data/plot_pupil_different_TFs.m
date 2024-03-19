@@ -90,8 +90,7 @@ hold on;
 % Create a shaded region for the SEM
 fill([x, fliplr(x)], [meanData - semData, fliplr(meanData + semData)], 'k', 'FaceAlpha', 0.3, 'EdgeColor', 'k');
 hold on
-
-plot([0,0],[0,1],'-k','linewidth',3)
+plot([44,44],[0,1],'-k','linewidth',3)
 
 hold on;
 plot([110,110],[-2,2],'--k')
