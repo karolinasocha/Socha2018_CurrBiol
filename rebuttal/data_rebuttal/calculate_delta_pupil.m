@@ -39,6 +39,7 @@ i=2
 path_data='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\'
 
 for iAn=1:size(newdirs,2)
+    
     newdir=newdirs{iAn};
     session=sessions{iAn};
     filepathanalysis=fullfile(path_data,  newdir, session);

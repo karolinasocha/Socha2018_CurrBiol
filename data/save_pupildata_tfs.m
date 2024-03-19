@@ -32,8 +32,8 @@
 clear all
 
 path_data='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\'
-newdir='240313_SH057__no_cam_SH'
-session='run00_160812_5tf-4dir-sf08-SinRand-5s'
+newdir='240311_SH057__no_cam_SH'
+session='run00_170314_12dir-sf08-tf4SinSeq5s'
 filepathanalysis=fullfile(path_data,  newdir, session); 
 expt_name = [filepathanalysis, '\KSdata.mat'];
 % 'SH055_12dir_SF0.08_TF4_5sstim_5sblank_Seq_20tr'
