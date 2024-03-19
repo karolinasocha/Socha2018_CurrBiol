@@ -50,7 +50,7 @@ for iAn=1:size(newdirs,2)
 %     delta_pupil{iAn}=(pupil_02-pupil_01)./pupil_01;
 
 end
-%%
+%
 pupil_animals_cell = cell2mat(pupil_av_stim_end);
 pupil_delta_cell = cell2mat(delta_pupil);
 
@@ -137,7 +137,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 savefigurepath='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\figures\'
 % filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\'
-filename=[session,'_averaged_epochs_duration_3mice_3s']
+filename=[session,'_averaged_epochs_duration_3mice_5s']
 print(gcf,'-dpdf',[savefigurepath, filename,'.pdf']);
 print(gcf,'-dpdf',[savefigurepath, filename,'.png']);
 
