@@ -22,13 +22,13 @@ clear all
 path_data='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\'
 newdirs={'240311_SH056__no_cam_SH','240311_SH057__no_cam_SH','SH0550304'}
 % sessions={'run03_164335_12dir-sf08-tf4SinSeq2s','run03_180209_12dir-sf08-tf4SinSeq2s','run01_120253_12dir-sf08-tf-4SinSeq2s'}
-% sessions={'run02_162601_12dir-sf08-tf4SinSeq3s', 'run02_174356_12dir-sf08-tf4SinSeq3s','run02_121818_12dir-sf08-tf-4SinSeq3s'}
+sessions={'run02_162601_12dir-sf08-tf4SinSeq3s', 'run02_174356_12dir-sf08-tf4SinSeq3s','run02_121818_12dir-sf08-tf-4SinSeq3s'}
 % sessions={'run01_160616_12dir-sf08-tf4SinSeq4s', 'run01_172413_12dir-sf08-tf4SinSeq4s','run03_123655_12dir-sf08-tf-4SinSeq4s'}
-sessions={'run00_154140_12dir-sf08-tf4SinSeq5s', 'run00_170314_12dir-sf08-tf4SinSeq5s','run00_112038_12dir-sf08-tf-4SinRan5s'}
+% sessions={'run00_154140_12dir-sf08-tf4SinSeq5s', 'run00_170314_12dir-sf08-tf4SinSeq5s','run00_112038_12dir-sf08-tf-4SinRan5s'}
 
 path_data='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\'
 
-i=5
+i=3
 for iAn=1:size(newdirs,2)
     newdir=newdirs{iAn};
     session=sessions{iAn};
@@ -137,7 +137,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 savefigurepath='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\figures\'
 % filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\'
-filename=[session,'_averaged_epochs_duration_3mice_5s']
+filename=[session,'_averaged_epochs_duration_3mice_3s']
 print(gcf,'-dpdf',[savefigurepath, filename,'.pdf']);
 print(gcf,'-dpdf',[savefigurepath, filename,'.png']);
 
