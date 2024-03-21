@@ -19,7 +19,43 @@ pupil_area_zscore = bsxfun(@rdivide, bsxfun(@minus, pupil_area, nanmean(pupil_ar
 pupil_area_zscore2=zscore(pupil_area);
 stimulusOnset=experiment_data.vstim_onoff(:,1);
 stimulusOffset=experiment_data.vstim_onoff(:,2);
+%%
 
+figure, 
+subplot(3,1,1)
+plot(pupil_area,'k');
+hold on
+set(gca,'xtick',[],'XColor', 'none','tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+axis tight
+ylim([0,4000])
+title(sprintf('Raw\n%s', newdir))
+
+subplot(3,1,2)
+smoothedPupil = smoothdata(pupil_area,'sgolay', 10);
+plot(smoothedPupil,'k');
+hold on
+set(gca,'xtick',[],'XColor', 'none','tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+axis tight
+ylim([0,4000])
+title(sprintf('SmoothRaw\n%s', newdir))
+
+subplot(3,1,3)
+plot(pupil_area_zscore,'k');
+hold on
+set(gca,'xtick',[],'XColor', 'none','tickdir','out','fontsize',14,'ticklength',get(gca,'ticklength')*4);
+box off
+axis tight
+ylim([-4,4])
+title(sprintf('zscored\n%s', session))
+
+set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
+savefigurepath='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\data2\figures\'
+% filepathanalysis='G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\rebuttal\data_rebuttal\'
+filename=[newdir,'_',session,'_rawtrace']
+print(gcf,'-dpdf',[savefigurepath, filename,'.pdf']);
+print(gcf,'-dpdf',[savefigurepath, filename,'.png']);
 %%
 stim_directions=unique(stimuli_params(:,1));
 stim_tfs=unique(stimuli_params(:,3));
