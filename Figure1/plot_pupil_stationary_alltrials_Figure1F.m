@@ -184,7 +184,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
+% print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials_locomotion.pdf']);
 
 %%
 selected_loc_animals=[2,4,11,10]; 
@@ -220,12 +220,11 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
+% print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryAllmice_locomotion4mice.pdf']);
 
 %%
 order_nasal=[11,12,1,2,3,4];
 order_temporal=[5,6,7,8,9,10];
-
 
 data_locomotion=average_locomotion(selected_loc_animals,:);
 data_locomotion_nasal=data_locomotion(:,order_nasal);
@@ -260,7 +259,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'significant_session_per_animal_stationary.pdf']);
+% print(gcf,'-dpdf',[filepathanalysis, 'significant_session_per_animal_stationary.pdf']);
 %%
 %% average sessions from the same animal
 
@@ -361,7 +360,7 @@ box off
 set(gcf,'paperunits','centimeters','papersize' ,[21,29.7],'color','w','paperposition',[0,0,21,29.7],'inverthardcopy','off');
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure1\scripts\'];
 
-print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials.pdf']);
+% print(gcf,'-dpdf',[filepathanalysis, 'average_raw_diam_relative_delta_pupil_SEM_animals_stationaryTrials.pdf']);
 %% heatmap
 
 %% across 13 mice
@@ -444,4 +443,4 @@ box off
     %[h0(iAn), pval(iAn), ci{iAn}, stats{iAn}]=ttest2(data_nasal(:), data_temporal(:),'Tail','right');
     [pval_all, h0_all, stats_all]=signrank(data_nasal(:), data_temporal(:),'Tail','right');
     number_increased_diam_animals=length(find(pval_still<0.05));
-    number_increased_diam_animals
+    number_increased_diam_animals;
