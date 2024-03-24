@@ -151,6 +151,7 @@ for iAn=1:length(animal_id_list)
     average_locomotion(iAn,:)=nanmean(mean_sess_appendedArray_loc(indecies,:),1);
     average_stiationary(iAn,:)=nanmean(mean_sess_appendedArray_still(indecies,:),1);
 end
+
 %%
 
 mean_all_locomotion=100*nanmean(average_locomotion,1);

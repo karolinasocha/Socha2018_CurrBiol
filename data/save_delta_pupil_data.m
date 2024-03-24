@@ -121,6 +121,7 @@ end
 % title('raw delta')
 % pause
 % end
+
 %%
 clear new_pupil_data
 new_pupil_data.newdir=data_behav_40expt.newdir;
@@ -169,7 +170,6 @@ new_pupil_data.trials_prct_diam_stims_reordered_entire=trials_prct_diam_stims_re
 new_pupil_data.trials_prct_diam_difference_stimulation=trials_prct_diam_difference_stimulation;
 
 %save('G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\data\new_pupil_data.mat','new_pupil_data')
-
 %%
 
 %% FORMAT SO IT FITS FOR STATISTICS

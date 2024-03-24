@@ -1,13 +1,11 @@
+addpath(genpath('G:\mousebox\code\mouselab\users\karolina'))
 
 %% this is script to generate Figure3F Stationary trials comparison
+
 % edited 02-August-2023 by KSocha
 % it has weighted probability to select session
-% CORRECTED ON 21-03-2024
+% corrected code on 21-03-2024
 
-%% plot density plots
-%% load data
-% in relation to pupil diameter
-clear all
 %% plot pupil response median vs fraction of running
 % G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\recalculation_pupil_median\figures\area_dynamics_behavior_condidtions
 % pupil_alltrials_alltrials_fractionrunning_average_pupil.pdf
@@ -24,48 +22,18 @@ expt2=new_pupil_data.expt2;
 
 diameter_data=new_pupil_data.diameter
 diameter_data{10}=diameter_data{10}';
+raw_diam_stims_delta=new_pupil_data.raw_diam_stims_delta;
+session_id=new_pupil_data.sessions_id;
+animal_id=new_pupil_data.animal_id;
 
-
-%% it needs delta pupil
+av_raw_diam_diff_relative_stimulation=new_pupil_data.av_raw_diam_diff_relative_stimulation;
 trials_raw_diam_diff_relative_stimulation=new_pupil_data.trials_raw_diam_diff_relative_stimulation;
-raw_relative_diam_delta=new_pupil_data.raw_relative_diam_delta;
-% pupil_delta=new_pupil_data.trials_raw_diam_diff_relative_stimulation
-%%
+trials_delta_pupil=trials_raw_diam_diff_relative_stimulation;
 
-
-for iAn=1:size(newdir,1);
-    clear av
-    clear tmp1
-    stims{iAn}=expt2{iAn}.frames.stims;  
-    [av tmp1]=tcEpochAverage2(diameter_data{iAn},stims{iAn});
-    trials_pupil_stims{iAn}=tmp1;
-clear tmp_file
-clear tmp_file
-for iStim=1:size(tmp1,4)
-    dtime = linspace(0,1,length(tmp1));
-    p2time =  linspace(0,1,159);
-tmp_file(:,:,iStim)=interp1(dtime,squeeze(tmp1(:,:,:,iStim)),p2time,'linear');
-
-end
-array_data_pupil{iAn}=tmp_file;
-matrix_data_pupil{iAn}=tmp_file(:,:);
-end
-
-%%
-for iAn=1:size(newdir,1);
-    
-frameRate=30.8634; %expt2{iAn}.frameRate;
-frame_starts=round(0.5*frameRate);
-frame_ends=round(1*frameRate);
-clear trials_pupil_stims_baseline
-clear trials_pupil_stims_offset
-
-trials_pupil_stims_baseline=squeeze(nanmean(array_data_pupil{iAn}(frame_starts:frame_ends,:,:),1));
-trials_pupil_stims_offset=squeeze(nanmean(array_data_pupil{iAn}(end-frame_starts:end,:,:),1));
-trials_delta_pupil{iAn}=(trials_pupil_stims_offset-trials_pupil_stims_baseline)./trials_pupil_stims_baseline;
-
-trials_pupil_stims_end{iAn}=trials_pupil_stims_offset;
-end
+% %% it needs delta pupil
+% trials_raw_diam_diff_relative_stimulation=new_pupil_data.trials_raw_diam_diff_relative_stimulation;
+% raw_relative_diam_delta=new_pupil_data.raw_relative_diam_delta;
+% 
 %% VELOCITY
 array_data_velo=[];
 matrix_data_velo=[];
@@ -103,24 +71,24 @@ for iAn=1:length(animal_id_list)
     % session
     sessions_id(indexes)=1:length(indexes)
 end
-
-% session
-
-%% %
-% velocity_data=velocity;
-% for iAn=1:size(velocity_data,2)
-%         epochs{iAn}=expt2{iAn}.frames.epochs;
-%         stims{iAn}=expt2{iAn}.frames.stims;
-%         tc_boutons{iAn}=diameter_data{iAn};
-%         [tc_response_epochs{iAn} tc_trial_response_epochs{iAn}]=tcEpochAverage2(tc_boutons{iAn},epochs{iAn});
-%         [tc_response_stims{iAn} tc_trial_response_stims{iAn}]=tcEpochAverage2(tc_boutons{iAn},stims{iAn});    
-%         [tc_velocity_stims{iAn} tc_trial_velocity_stims{iAn}]=tcEpochAverage2(velocity{iAn},stims{iAn});
-%         [tc_velocity_epochs{iAn} tc_trial_velocity_epochs{iAn}]=tcEpochAverage2(velocity{iAn},epochs{iAn});
-% end
-%  
 %%
+
+%%
+velocity_data=velocity;
+for iAn=1:size(velocity_data,2)
+        epochs{iAn}=expt2{iAn}.frames.epochs;
+        stims{iAn}=expt2{iAn}.frames.stims;
+        tc_pupil{iAn}=diameter_data{iAn};
+        [tc_response_epochs{iAn} tc_trial_response_epochs{iAn}]=tcEpochAverage2(tc_pupil{iAn},epochs{iAn});
+        [tc_response_stims{iAn} tc_trial_response_stims{iAn}]=tcEpochAverage2(tc_pupil{iAn},stims{iAn});    
+        [tc_velocity_stims{iAn} tc_trial_velocity_stims{iAn}]=tcEpochAverage2(velocity{iAn},stims{iAn});
+        [tc_velocity_epochs{iAn} tc_trial_velocity_epochs{iAn}]=tcEpochAverage2(velocity{iAn},epochs{iAn});
+end
+ 
+%%
+
 clear response_norm_baseline
-for iAn=1:size(tc_boutons,2)
+for iAn=1:size(tc_pupil,2)
     clear eye_tmp
     clear stims_temp
     clear epochs_temp
@@ -167,10 +135,6 @@ clear tstop
 % perthresh_stationary=0.95;
 % perthresh=0.05;
 
-% locthresh=1;
-% stillthresh=1;
-% perthresh_stationary=0.95;
-% perthresh=0.05;
 locthresh=1;
 stillthresh=0.25;
 perthresh_stationary=0.95;
@@ -201,11 +165,11 @@ nondefined{iAn}= ~(stilltrial{iAn}(:,:)+loctrial{iAn}(:,:));
 % select pupil diameter eye after standarization without reordering
 % stimulus
 
-tc_in=trials_pupil_stims_end{iAn};
-
-resp_loc_resp_trials{iAn}=tc_in(:,:,loc_trial',loc_stim_tmp');
-resp_still_resp_trials{iAn}=tc_in(:,:,still_trial',still_stim_tmp');
-resp_nondef_resp_trials{iAn}=tc_in(:,:,nondef_trial',nondef_stim_tmp');
+% tc_in=tc_trial_response_stims{iAn};
+tc_in=trials_delta_pupil{iAn};
+resp_loc_resp_trials{iAn}=tc_in(loc_trial',loc_stim_tmp');
+resp_still_resp_trials{iAn}=tc_in(still_trial',still_stim_tmp');
+resp_nondef_resp_trials{iAn}=tc_in(nondef_trial',nondef_stim_tmp');
 
 %
 stim_deg_loc{iAn}=stimulus{iAn}(loc_stim_tmp);
@@ -227,8 +191,8 @@ clear still_trial
 clear nondef_trial
     end
 
-%%
-
+    %%
+    %% fraction of locomotion trials, stationary and intermittent
 for iAn=1:length(loctrial)
 n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:12)));
 n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:12)));
@@ -243,6 +207,7 @@ round(100*([fraction_loc_trials,fraction_nondef_trials,fraction_still_trials ]))
 
 % [12% (loc)    34% (nondef)    53% (still)] criteria: 95% with 1cm/s
 %[45 (% loc)     1(% nondef)    53% (still)] criteria: 5% with 1cm/s
+%(includes both)
     %%
 
 clear av_nondef_eye_trials
@@ -251,18 +216,16 @@ clear av_loc_eye_trials
 
     for iAn = 1:size(resp_loc_resp_trials,2)
     
-    av_loc_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_loc_resp_trials{iAn},1),2));     
-    av_still_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_still_resp_trials{iAn},1),2));
-    av_nondef_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_nondef_resp_trials{iAn},1),2));
+    av_loc_eye_trials{iAn}=squeeze(resp_loc_resp_trials{iAn});     
+    av_still_eye_trials{iAn}=squeeze(resp_still_resp_trials{iAn});
+    av_nondef_eye_trials{iAn}=squeeze(resp_nondef_resp_trials{iAn});
 
     end
-    
 %%
 
 for iAn=1:length(newdir)
     newdir_animals_id{iAn}=newdir{iAn}(8:12);
 end
-
 animal_id_list=unique(newdir_animals_id);
 animal_id=nan(length(newdir),1);
 sessions_id=nan(length(newdir),1);
@@ -274,15 +237,15 @@ for iAn=1:length(animal_id_list)
     sessions_id(indexes)=1:length(indexes)
 end
 
+
 %% ORIGINAL DATA CALCULATING P-VALUE AND STATS ORIGINAL HERE
 % this will be compared with bootrapping results in the next sections
 n_pairs = 6;
-
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
-ddata_temporal_still2=nan([length(newdir), n_pairs, 10]);
-ddata_nasal_still2=nan([length(newdir), n_pairs,10]);
+ddata_temporal_loc2=nan([length(newdir), n_pairs, 10]);
+ddata_nasal_loc2=nan([length(newdir), n_pairs,10]);
 
 for iAn=1:length(newdir)
        for iistim=1:n_pairs
@@ -292,73 +255,68 @@ for iAn=1:length(newdir)
         
         iStim_nasal=iistim;
         iStim_temporal=iistim+6;
-        clear nasal_trials_still
-        clear temporal_trials_still
+        clear nasal_trials_loc
+        clear temporal_trials_loc
         
-        nasal_trials_still = find(stim_deg_still{iAn}==nasal_istim);
-        temporal_trials_still= find(stim_deg_still{iAn}==temporal_istim);
+        nasal_trials_loc = find(stim_deg_loc{iAn}==nasal_istim);
+        temporal_trials_loc= find(stim_deg_loc{iAn}==temporal_istim);
         
         clear tmp_temporal
         clear tmp_nasal
         
-        tmp_nasal=nanmean(av_still_eye_trials{iAn}(nasal_trials_still,nasal_trials_still)',1);
-        tmp_temporal=nanmean(av_still_eye_trials{iAn}(temporal_trials_still,temporal_trials_still)',1);
+        tmp_nasal=nanmean(av_loc_eye_trials{iAn}(nasal_trials_loc,nasal_trials_loc)',1);
+        tmp_temporal=nanmean(av_loc_eye_trials{iAn}(temporal_trials_loc,temporal_trials_loc)',1);
 
-        ddata_temporal_still2(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
-        ddata_nasal_still2(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
+        ddata_temporal_loc2(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
+        ddata_nasal_loc2(iAn,iistim,1:length(tmp_nasal))=tmp_nasal;
         % cell2mat((stim_deg_still))'
                 
        end
 end
 
-[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_still2(:),ddata_temporal_still2(:),'Tail','right');
+
+[p_original_signrank, ~, stats_original] = signrank(ddata_nasal_loc2(:),ddata_temporal_loc2(:),'Tail','right');
 stats_original_signrank = stats_original.signedrank;
 
-[p_original_ranksum, ~, stats_original_ranksum] = ranksum(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','right');
+[p_original_ranksum, ~, stats_original_ranksum] = ranksum(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','right');
 
-[~, p_original_ttest2, ~] = ttest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','right');
+[~, p_original_ttest2, ~] = ttest2(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','right');
 
+[~, p_original_kstest2, stat_original_kstest2]=kstest2(rmmissing(ddata_nasal_loc2(:)),rmmissing(ddata_temporal_loc2(:)),'Tail','larger');
 
-%[~, p_original_kstest2]=kstest2(ddata_nasal_still(:),ddata_temporal_still(:),'alpha',0.05,'Tail','larger');
-
-[~, p_original_kstest2, stat_original_kstest2]=kstest2(rmmissing(ddata_nasal_still2(:)),rmmissing(ddata_temporal_still2(:)),'Tail','larger');
 fprintf('kstest2 original p-value:  %.2e\n', p_original_kstest2);
 fprintf('ttest2 original p-value:  %.2e\n', p_original_ttest2);
 fprintf('ranksum original p-value:  %.2e\n', p_original_ranksum);
 fprintf('signrank original p-value:  %.2e\n', p_original_signrank);
 
-% kstest2 original p-value:  9.98e-01
-% ttest2 original p-value:  1.75e-29
-% ranksum original p-value:  5.65e-32
-% signrank original p-value:  3.05e-49
-
+% kstest2 original p-value:  9.99e-01
+% ttest2 original p-value:  1.13e-14
+% ranksum original p-value:  4.09e-16
+% signrank original p-value:  1.82e-14
 %% BOOTSTRAPPING and CALCULATING BOOTSTRAPP P-BALS and STATS
 
 n_runs=1000
 n_sampled_animals=4
-n_sampled_trials=6
+n_sampled_trials=3
 n_pairs = 6;
-ndrawnpoints=6
+ndrawnpoints=3
 
-tmpx_all=[];
-tmpy_all=[];
-    
 stimulus_ordered=0:30:330;
 stimulus_ordered_mod=mod(stimulus_ordered-60,360);
 
 x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
 x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs,ndrawnpoints]);
 
-x_nasal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
-x_temporal2=nan([n_sampled_animals,n_sampled_trials,n_pairs,ndrawnpoints]);
-
 animals_ids_unique=unique(animal_id);
 
+tmpx_all=[];
+tmpy_all=[];
+    
 for iruns=1:n_runs
+    
     tmpx = [];
     tmpy = [];
 
-    clear animals_rand_selections
     clear animal_subset
     clear random_indices
 
@@ -370,16 +328,11 @@ for iruns=1:n_runs
     animal_subset = animals_ids_unique(random_indices(1:n_sampled_animals));
     animals_rand_selections(iruns, :) = animal_subset;
 
-       clear nasal_trials_still
-       clear temporal_trials_still
-       clear ddata_temporal_still
-       clear ddata_nasal_still
-       
-       clear nasal_trials_still
-       clear temporal_trials_still
-       clear ddata_temporal_still
-       clear ddata_nasal_still
-       
+       clear nasal_trials_loc
+       clear temporal_trials_loc
+       clear ddata_temporal_loc
+       clear ddata_nasal_loc
+
     for iAn=1:length(animal_subset)
         
        clear chosen_session
@@ -398,7 +351,7 @@ for iruns=1:n_runs
        %before change 202-08-2023
 
        chosen_session=animal_session_indexes(random_session(1));
-       % below section was before change 02-08-2023
+%        % sessions selection
 %        animal_session_indexes=find(animal_id==animal_subset(iAn));
 %        random_session=randperm(numel(animal_session_indexes));
 %        chosen_session=animal_session_indexes(random_session(1));
@@ -411,15 +364,15 @@ for iruns=1:n_runs
         iStim_nasal=iistim;
         iStim_temporal=iistim+6;
         
-        nasal_trials_still{iAn} = find(stim_deg_still{chosen_session}==nasal_istim);
-        temporal_trials_still{iAn}= find(stim_deg_still{chosen_session}==temporal_istim);
+        nasal_trials_loc{iAn} = find(stim_deg_loc{chosen_session}==nasal_istim);
+        temporal_trials_loc{iAn}= find(stim_deg_loc{chosen_session}==temporal_istim);
         
-        ddata_temporal_still{iAn}=nanmean(av_still_eye_trials{chosen_session}(temporal_trials_still{iAn},temporal_trials_still{iAn})',1);
-        ddata_nasal_still{iAn}=nanmean(av_still_eye_trials{chosen_session}(nasal_trials_still{iAn},nasal_trials_still{iAn})',1);
+        ddata_temporal_loc{iAn}=nanmean(av_loc_eye_trials{chosen_session}(temporal_trials_loc{iAn},temporal_trials_loc{iAn})',1);
+        ddata_nasal_loc{iAn}=nanmean(av_loc_eye_trials{chosen_session}(nasal_trials_loc{iAn},nasal_trials_loc{iAn})',1);
         % cell2mat((stim_deg_still))'
         
-        tt1(iAn)=size(ddata_temporal_still{iAn},2);
-        tt2(iAn)=size(ddata_nasal_still{iAn},2);
+        tt1(iAn)=size(ddata_temporal_loc{iAn},2);
+        tt2(iAn)=size(ddata_nasal_loc{iAn},2);
 %         disp(sprintf('There are %d - %d and %d - %d trials.',...
 %             tt1(iAn),nasal_istim,tt2(iAn),temporal_istim));
         if tt2(iAn)>0 & tt1(iAn)>0
@@ -434,8 +387,8 @@ for iruns=1:n_runs
                 %temporaldirrawdatadistribution = GET
                 clear nasaldirrawdatadistribution
                 clear temporaldirrawdatadistribution
-                nasaldirrawdatadistribution=ddata_nasal_still{iAn};
-                temporaldirrawdatadistribution=ddata_temporal_still{iAn};
+                nasaldirrawdatadistribution=ddata_nasal_loc{iAn};
+                temporaldirrawdatadistribution=ddata_temporal_loc{iAn};
                 %x_nasal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
                 %x_temporal = nan([n_runs, n_sampled_animals, n_sampled_trials,n_pairs]);
                 tmp_x_nasal=datasample(nasaldirrawdatadistribution,ndrawnpoints,'replace',true);
@@ -454,32 +407,51 @@ for iruns=1:n_runs
     
     tmpx_all=[tmpx_all,x_nasal2];
     tmpy_all=[tmpy_all,x_temporal2];
+       
     end
+    
     %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
-    [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
-    
-    [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
-    stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
-    pval_bootstrap_signrank(iruns)=pval_bootstrap;
-    
+%     [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+%     
+%     [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+%     stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
+%     pval_bootstrap_signrank(iruns)=pval_bootstrap;
+%     
     [pval_bootstrap_ranksum(iruns), ~, stats_bootstrap_ranksum] = ranksum(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
 
     [~, pval_bootstrap_kstest2(iruns), stats_bootstrap_kstest2]=kstest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','larger');
     
+    
 end
-
+%%
 prctile_tresh=50;
 fprintf('kstest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
 fprintf('ttest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
 fprintf('ranksum bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
 fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
 
+% fprintf('kstest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+% fprintf('ttest2 bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+% fprintf('ranksum bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+% fprintf('signrank bootstrapping 97.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 97.5 prctile p-value:  8.67e-01
+% ttest2 bootstrapping 97.5 prctile p-value:  1.00e+00
+% ranksum bootstrapping 97.5 prctile p-value:  1.00e+00
+% signrank bootstrapping 97.5 prctile p-value:  1.00e+00
+
+prctile_tresh=2.5;
+fprintf('kstest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+fprintf('ttest2 bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+fprintf('ranksum bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+fprintf('signrank bootstrapping 2.5 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+
+% kstest2 bootstrapping 2.5 prctile p-value:  6.20e-23
+% ttest2 bootstrapping 2.5 prctile p-value:  2.06e-14
+% ranksum bootstrapping 2.5 prctile p-value:  1.29e-14
+% signrank bootstrapping 2.5 prctile p-value:  3.85e-30
 
 %%
-
-
-%% PLOT HEAT DENSITY MAP
-
 figure
 vXEdge = linspace(0,100,60);
 vYEdge = linspace(0,100,60);
@@ -501,7 +473,7 @@ plot([0 150],[0,150],'w-')
 %title(sprintf('Resampled %d times, each sample %d trials',nresampling,ndrawnpoints))
 ylabel('delta pupil Nasal directions (%)')
 xlabel('delta pupil Temporal directions (%)')
-title('Stationary Trials')
+title('Locomotion Trials')
 caxis([0 0.0025])
 
 set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickdir','out',...
@@ -509,5 +481,5 @@ set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickd
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
 filepathanalysis=['G:\mousebox\code\mouselab\users\karolina\FiguresPaper2023\Figure3\']; 
-% print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_stationary__bootstrapped.pdf']);
+print(gcf,'-dpdf',[filepathanalysis, 'FigureSuppl2Bcorrect_resampling_plot_density_stationary__bootstrapped_13mice.pdf']);
 

@@ -6,8 +6,7 @@
 
 %% plot density plots
 %% load data
-% in relation to pupil diameter
-clear all
+
 %% plot pupil response median vs fraction of running
 % G:\mousebox\code\mouselab\users\karolina\Socha2018_revision\recalculation_pupil_median\figures\area_dynamics_behavior_condidtions
 % pupil_alltrials_alltrials_fractionrunning_average_pupil.pdf
@@ -25,47 +24,21 @@ expt2=new_pupil_data.expt2;
 diameter_data=new_pupil_data.diameter
 diameter_data{10}=diameter_data{10}';
 
+diameter_data=new_pupil_data.diameter
+diameter_data{10}=diameter_data{10}';
+raw_diam_stims_delta=new_pupil_data.raw_diam_stims_delta;
+session_id=new_pupil_data.sessions_id;
+animal_id=new_pupil_data.animal_id;
 
-%% it needs delta pupil
+av_raw_diam_diff_relative_stimulation=new_pupil_data.av_raw_diam_diff_relative_stimulation;
 trials_raw_diam_diff_relative_stimulation=new_pupil_data.trials_raw_diam_diff_relative_stimulation;
-raw_relative_diam_delta=new_pupil_data.raw_relative_diam_delta;
-% pupil_delta=new_pupil_data.trials_raw_diam_diff_relative_stimulation
-%%
+trials_delta_pupil=trials_raw_diam_diff_relative_stimulation;
 
+% new_pupil_data.trials_raw_diam_difference_stimulation
 
-for iAn=1:size(newdir,1);
-    clear av
-    clear tmp1
-    stims{iAn}=expt2{iAn}.frames.stims;  
-    [av tmp1]=tcEpochAverage2(diameter_data{iAn},stims{iAn});
-    trials_pupil_stims{iAn}=tmp1;
-clear tmp_file
-clear tmp_file
-for iStim=1:size(tmp1,4)
-    dtime = linspace(0,1,length(tmp1));
-    p2time =  linspace(0,1,159);
-tmp_file(:,:,iStim)=interp1(dtime,squeeze(tmp1(:,:,:,iStim)),p2time,'linear');
-
-end
-array_data_pupil{iAn}=tmp_file;
-matrix_data_pupil{iAn}=tmp_file(:,:);
-end
-
-%%
-for iAn=1:size(newdir,1);
-    
-frameRate=30.8634; %expt2{iAn}.frameRate;
-frame_starts=round(0.5*frameRate);
-frame_ends=round(1*frameRate);
-clear trials_pupil_stims_baseline
-clear trials_pupil_stims_offset
-
-trials_pupil_stims_baseline=squeeze(nanmean(array_data_pupil{iAn}(frame_starts:frame_ends,:,:),1));
-trials_pupil_stims_offset=squeeze(nanmean(array_data_pupil{iAn}(end-frame_starts:end,:,:),1));
-trials_delta_pupil{iAn}=(trials_pupil_stims_offset-trials_pupil_stims_baseline)./trials_pupil_stims_baseline;
-
-trials_pupil_stims_end{iAn}=trials_pupil_stims_offset;
-end
+% %% it needs delta pupil
+% trials_raw_diam_diff_relative_stimulation=new_pupil_data.trials_raw_diam_diff_relative_stimulation;
+% raw_relative_diam_delta=new_pupil_data.raw_relative_diam_delta;
 %% VELOCITY
 array_data_velo=[];
 matrix_data_velo=[];
@@ -106,21 +79,31 @@ end
 
 % session
 
-%% %
+%%
 % velocity_data=velocity;
-% for iAn=1:size(velocity_data,2)
-%         epochs{iAn}=expt2{iAn}.frames.epochs;
-%         stims{iAn}=expt2{iAn}.frames.stims;
-%         tc_boutons{iAn}=diameter_data{iAn};
-%         [tc_response_epochs{iAn} tc_trial_response_epochs{iAn}]=tcEpochAverage2(tc_boutons{iAn},epochs{iAn});
-%         [tc_response_stims{iAn} tc_trial_response_stims{iAn}]=tcEpochAverage2(tc_boutons{iAn},stims{iAn});    
-%         [tc_velocity_stims{iAn} tc_trial_velocity_stims{iAn}]=tcEpochAverage2(velocity{iAn},stims{iAn});
-%         [tc_velocity_epochs{iAn} tc_trial_velocity_epochs{iAn}]=tcEpochAverage2(velocity{iAn},epochs{iAn});
-% end
-%  
+for iAn=1:size(velocity_data,2)
+    
+        frameRate=expt2{iAn}.frameRate;
+        frame_starts=round(0.5*frameRate);
+        frame_ends=round(1*frameRate);
+
+        epochs{iAn}=expt2{iAn}.frames.epochs;
+        stims{iAn}=expt2{iAn}.frames.stims;
+        tc_boutons{iAn}=diameter_data{iAn};
+        
+        [tc_response_epochs{iAn} tc_trial_response_epochs{iAn}]=tcEpochAverage2(tc_boutons{iAn},epochs{iAn});
+        [tc_response_stims{iAn} tc_trial_response_stims{iAn}]=tcEpochAverage2(tc_boutons{iAn},stims{iAn});    
+        [tc_velocity_stims{iAn} tc_trial_velocity_stims{iAn}]=tcEpochAverage2(velocity{iAn},stims{iAn});
+        [tc_velocity_epochs{iAn} tc_trial_velocity_epochs{iAn}]=tcEpochAverage2(velocity{iAn},epochs{iAn});
+        pupil_average{iAn}=squeeze(nanmean(tc_trial_response_stims{iAn}(length(tc_trial_response_stims{iAn})-frame_starts:length(tc_trial_response_stims{iAn}),:,:,:),1));
+end
+%%
+% tc_trial_response_stims{iAn}(length(tc_trial_response_stims{iAn})-frame_starts:length(tc_trial_response_stims{iAn}),:,:);
+
+%%
 %%
 clear response_norm_baseline
-for iAn=1:size(tc_boutons,2)
+for iAn=1:length(newdir)
     clear eye_tmp
     clear stims_temp
     clear epochs_temp
@@ -167,12 +150,8 @@ clear tstop
 % perthresh_stationary=0.95;
 % perthresh=0.05;
 
-% locthresh=1;
-% stillthresh=1;
-% perthresh_stationary=0.95;
-% perthresh=0.05;
 locthresh=1;
-stillthresh=0.25;
+stillthresh=1;
 perthresh_stationary=0.95;
 perthresh=0.05;
 
@@ -201,11 +180,13 @@ nondefined{iAn}= ~(stilltrial{iAn}(:,:)+loctrial{iAn}(:,:));
 % select pupil diameter eye after standarization without reordering
 % stimulus
 
-tc_in=trials_pupil_stims_end{iAn};
 
-resp_loc_resp_trials{iAn}=tc_in(:,:,loc_trial',loc_stim_tmp');
-resp_still_resp_trials{iAn}=tc_in(:,:,still_trial',still_stim_tmp');
-resp_nondef_resp_trials{iAn}=tc_in(:,:,nondef_trial',nondef_stim_tmp');
+
+tc_in=pupil_average{iAn};
+
+resp_loc_resp_trials{iAn}=tc_in(loc_trial',loc_stim_tmp');
+resp_still_resp_trials{iAn}=tc_in(still_trial',still_stim_tmp');
+resp_nondef_resp_trials{iAn}=tc_in(nondef_trial',nondef_stim_tmp');
 
 %
 stim_deg_loc{iAn}=stimulus{iAn}(loc_stim_tmp);
@@ -227,8 +208,7 @@ clear still_trial
 clear nondef_trial
     end
 
-%%
-
+    %%
 for iAn=1:length(loctrial)
 n_loc_trials(iAn)=sum(sum(loctrial{iAn}(:,1:12)));
 n_still_trials(iAn)=sum(sum(stilltrial{iAn}(:,1:12)));
@@ -251,12 +231,11 @@ clear av_loc_eye_trials
 
     for iAn = 1:size(resp_loc_resp_trials,2)
     
-    av_loc_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_loc_resp_trials{iAn},1),2));     
-    av_still_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_still_resp_trials{iAn},1),2));
-    av_nondef_eye_trials{iAn}=squeeze(nanmean(nanmean(resp_nondef_resp_trials{iAn},1),2));
+    av_loc_eye_trials{iAn}=squeeze(resp_loc_resp_trials{iAn});     
+    av_still_eye_trials{iAn}=squeeze(resp_still_resp_trials{iAn});
+    av_nondef_eye_trials{iAn}=squeeze(resp_nondef_resp_trials{iAn});
 
     end
-    
 %%
 
 for iAn=1:length(newdir)
@@ -301,7 +280,7 @@ for iAn=1:length(newdir)
         clear tmp_temporal
         clear tmp_nasal
         
-        tmp_nasal=nanmean(av_still_eye_trials{iAn}(nasal_trials_still,nasal_trials_still)',1);
+        tmp_nasal=nanmean(av_still_eye_trials{iAn}(nasal_trials_still,nasal_trials_still)',1);;
         tmp_temporal=nanmean(av_still_eye_trials{iAn}(temporal_trials_still,temporal_trials_still)',1);
 
         ddata_temporal_still2(iAn,iistim,1:length(tmp_temporal))=tmp_temporal;
@@ -456,11 +435,11 @@ for iruns=1:n_runs
     tmpy_all=[tmpy_all,x_temporal2];
     end
     %[pval_signrank(iruns), h0_signrank(iruns)]=signrank(tmpx(:),tmpy(:),'Tail','right');
-    [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
-    
-    [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
-    stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
-    pval_bootstrap_signrank(iruns)=pval_bootstrap;
+%     [~, pval_bootstrap_ttest2(iruns)]=ttest2(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+%     
+%     [pval_bootstrap, ~, stats_bootstrap] = signrank(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
+%     stats_bootstraps_signrank(iruns) = stats_bootstrap.signedrank;
+%     pval_bootstrap_signrank(iruns)=pval_bootstrap;
     
     [pval_bootstrap_ranksum(iruns), ~, stats_bootstrap_ranksum] = ranksum(rmmissing(tmpx(:)),rmmissing(tmpy(:)),'Tail','right');
 
@@ -468,12 +447,12 @@ for iruns=1:n_runs
     
 end
 
-prctile_tresh=50;
-fprintf('kstest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
-fprintf('ttest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
-fprintf('ranksum bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
-fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
-
+% prctile_tresh=50;
+% fprintf('kstest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_kstest2,prctile_tresh));
+% fprintf('ttest2 bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ttest2,prctile_tresh));
+% fprintf('ranksum bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_ranksum,prctile_tresh));
+% fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_bootstrap_signrank,prctile_tresh));
+% 
 
 %%
 
@@ -481,12 +460,12 @@ fprintf('signrank bootstrapping 50 prctile p-value:  %.2e\n', prctile(pval_boots
 %% PLOT HEAT DENSITY MAP
 
 figure
-vXEdge = linspace(0,100,60);
-vYEdge = linspace(0,100,60);
+vXEdge = linspace(0,1.5,60);
+vYEdge = linspace(0,1.5,60);
 
 %mHist2d = hist2d([x_nasal(:),x_temporal(:)],vYEdge,vXEdge)/length(x_nasal(:));
-npoints = sum(isnan(100*tmpx_all(:)) & isnan(100*tmpy_all(:)))
-mHist2d = hist2d([100*tmpx_all(:),100*tmpy_all(:)],vYEdge,vXEdge)/npoints;
+npoints = sum(isnan(1*tmpx_all(:)) & isnan(1*tmpy_all(:)))
+mHist2d = hist2d([1*tmpx_all(:),1*tmpy_all(:)],vYEdge,vXEdge)/npoints;
 
 subplot(221)
 imagesc(vXEdge,vYEdge, mHist2d)
@@ -497,14 +476,14 @@ set(gca,'YDir','normal')
 axis square
 colorbar()
 colormap(gray)
-plot([0 150],[0,150],'w-')
+plot([0 100],[0,100],'w-')
 %title(sprintf('Resampled %d times, each sample %d trials',nresampling,ndrawnpoints))
-ylabel('delta pupil Nasal directions (%)')
-xlabel('delta pupil Temporal directions (%)')
+ylabel('pupil Nasal directions (mm2)')
+xlabel('pupil Temporal directions (mm2)')
 title('Stationary Trials')
 caxis([0 0.0025])
 
-set(gca,'ytick',[0:50:150],'xtick',[0:50:150],'tickdir','out','box','off','tickdir','out',...
+set(gca,'ytick',[0:.5:2],'xtick',[0:.5:2],'tickdir','out','box','off','tickdir','out',...
 'layer','top','color','none','fontsize',14,'ticklength',get(gca,'ticklength')*4)       
 
 set(gcf,'paperunits','centimeters','papersize' ,[30,30],'color','w','paperposition',[0,0,30,30],'inverthardcopy','off')
